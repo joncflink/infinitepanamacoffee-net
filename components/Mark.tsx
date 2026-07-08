@@ -3,6 +3,34 @@ type MarkProps = {
   variant?: "dark" | "light";
 };
 
+const BASE_STROKE = 1.3;
+
+// One continuous ribbon, split into its 16 bezier segments so the four
+// segments touching the crossover (and their neighbors) can carry a barely
+// perceptible taper — full width away from the center, ~4% thinner right at
+// the crossing, like natural fountain-pen line variation.
+const RIBBON_SEGMENTS = [
+  { d: "M140.000,50.000 C140.000,56.072 138.360,63.921 135.430,68.218", w: 1 },
+  { d: "M135.430,68.218 C132.500,72.505 127.840,75.760 122.430,75.760", w: 1 },
+  { d: "M122.430,75.760 C117.010,75.760 110.030,72.505 102.960,68.218", w: 0.98 },
+  { d: "M102.960,68.218 C95.890,63.921 87.650,56.072 80.000,50.000", w: 0.96 },
+  { d: "M80.000,50.000 C72.350,43.928 64.110,36.079 57.040,31.782", w: 0.96 },
+  { d: "M57.040,31.782 C49.970,27.495 42.990,24.240 37.570,24.240", w: 0.98 },
+  { d: "M37.570,24.240 C32.160,24.240 27.500,27.495 24.570,31.782", w: 1 },
+  { d: "M24.570,31.782 C21.640,36.079 20.000,43.928 20.000,50.000", w: 1 },
+  { d: "M20.000,50.000 C20.000,56.072 21.640,63.921 24.570,68.218", w: 1 },
+  { d: "M24.570,68.218 C27.500,72.505 32.160,75.760 37.570,75.760", w: 1 },
+  { d: "M37.570,75.760 C42.990,75.760 49.970,72.505 57.040,68.218", w: 0.98 },
+  { d: "M57.040,68.218 C64.110,63.921 72.350,56.072 80.000,50.000", w: 0.96 },
+  { d: "M80.000,50.000 C87.650,43.928 95.890,36.079 102.960,31.782", w: 0.96 },
+  { d: "M102.960,31.782 C110.030,27.495 117.010,24.240 122.430,24.240", w: 0.98 },
+  { d: "M122.430,24.240 C127.840,24.240 132.500,27.495 135.430,31.782", w: 1 },
+  { d: "M135.430,31.782 C138.360,36.079 140.000,43.928 140.000,50.000", w: 1 },
+];
+
+const STAR_PATH =
+  "M80,32.45 C81,37.45 83,39.45 88,40.45 C83,41.45 81,44.06 80,49.06 C79,44.06 77,41.45 72,40.45 C77,39.45 79,37.45 80,32.45 Z";
+
 export default function Mark({ className = "", variant = "dark" }: MarkProps) {
   const loopColor = variant === "light" ? "#f7f2e8" : "#1f4d3a";
   const textColor = variant === "light" ? "text-cream" : "text-forest";
@@ -12,18 +40,18 @@ export default function Mark({ className = "", variant = "dark" }: MarkProps) {
   return (
     <div className={`flex flex-col items-center ${className}`}>
       <svg viewBox="0 0 160 90" aria-hidden="true" className="h-16 w-auto">
-        <path
-          d="M140.00,50.00 C140.00,56.94 138.36,65.91 135.43,70.82 C132.50,75.72 127.84,79.44 122.43,79.44 C117.01,79.44 110.03,75.72 102.96,70.82 C95.89,65.91 87.65,56.94 80.00,50.00 C72.35,43.06 64.11,34.09 57.04,29.18 C49.97,24.28 42.99,20.56 37.57,20.56 C32.16,20.56 27.50,24.28 24.57,29.18 C21.64,34.09 20.00,43.06 20.00,50.00 C20.00,56.94 21.64,65.91 24.57,70.82 C27.50,75.72 32.16,79.44 37.57,79.44 C42.99,79.44 49.97,75.72 57.04,70.82 C64.11,65.91 72.35,56.94 80.00,50.00 C87.65,43.06 95.89,34.09 102.96,29.18 C110.03,24.28 117.01,20.56 122.43,20.56 C127.84,20.56 132.50,24.28 135.43,29.18 C138.36,34.09 140.00,43.06 140.00,50.00 Z"
-          fill="none"
-          stroke={loopColor}
-          strokeWidth="2.5"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-        <path
-          d="M80,32.45 C81,37.45 83,39.45 88,40.45 C83,41.45 81,43.45 80,48.45 C79,43.45 77,41.45 72,40.45 C77,39.45 79,37.45 80,32.45 Z"
-          fill="#c8a44d"
-        />
+        {RIBBON_SEGMENTS.map((seg, i) => (
+          <path
+            key={i}
+            d={seg.d}
+            fill="none"
+            stroke={loopColor}
+            strokeWidth={BASE_STROKE * seg.w}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+        ))}
+        <path d={STAR_PATH} fill="#c8a44d" />
       </svg>
       <div
         className={`mt-2 font-heading text-[1.7rem] font-bold tracking-wide ${textColor}`}
