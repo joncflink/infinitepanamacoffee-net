@@ -124,7 +124,7 @@ export default function FoundersLetterPage() {
           craftsmanship that brought the coffee into existence.
         </p>
         <p>
-          That is why every bag is connected to its own Infinite
+          That is why every bag is connected to its own Infinite Coffee
           Passport™&mdash;a living record of origin, harvest, process, and
           journey. We want every customer to understand not only what they
           are buying, but where it came from and why it matters.
@@ -201,7 +201,7 @@ export default function FoundersLetterPage() {
           href="/passport/IPC-ALT-001#passport"
           className="inline-block rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5"
         >
-          Explore the Infinite Passport™
+          Explore the Infinite Coffee Passport™
         </Link>
       </div>
     </main>

@@ -12,7 +12,7 @@ export type CoffeeStatus = "available" | "reserve" | "sold_out" | "archived";
 
 export const STATUS_LABELS: Record<CoffeeStatus, string> = {
   available: "Available",
-  reserve: "Reserve",
+  reserve: "Reserve Collection",
   sold_out: "Currently Resting",
   archived: "Archived",
 };
@@ -26,8 +26,8 @@ export type CoffeeSizeOption = {
   qrCodePath: string;
 };
 
-/** "To be confirmed" placeholders are intentional — do not fill in specifics without a real source. */
-const TBC = "To be confirmed";
+/** "Pending Producer Confirmation" placeholders are intentional — do not fill in specifics without a real source. */
+const TBC = "Pending Producer Confirmation";
 
 export type Coffee = {
   lotId: string;
@@ -120,4 +120,11 @@ export function getCoffeeByLot(lotId: string): Coffee | undefined {
 
 export function getAllLotIds(): string[] {
   return coffees.map((c) => c.lotId);
+}
+
+/** Collectible display format for a lot number, e.g. "IPC-ALT-001" -> "IPC • 2025 • ALT • 001". The raw lotId stays the machine-readable ID used in URLs, QR codes, and WhatsApp messages. */
+export function formatLotDisplay(coffee: Coffee): string {
+  const parts = coffee.lotId.split("-");
+  const year = coffee.harvest.match(/\d{4}/)?.[0];
+  return [parts[0], year, parts[1], parts[2]].filter(Boolean).join(" • ");
 }

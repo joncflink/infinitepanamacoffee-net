@@ -19,14 +19,14 @@ export default function CellarView() {
     return (
       <div className="text-center">
         <p className="text-base leading-8 text-dark-gray">
-          Your cellar is empty. Explore a coffee&rsquo;s Passport™ and add it
-          to start your collection.
+          Your cellar is empty. Explore an Infinite Coffee Passport™ and add
+          it to start your collection.
         </p>
         <Link
           href="/passport/IPC-ALT-001"
           className="mt-8 inline-block rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5"
         >
-          Explore Coffee Passport™
+          Explore Infinite Coffee Passport™
         </Link>
       </div>
     );

@@ -7,7 +7,7 @@ export default function PrintCertificateButton() {
       onClick={() => window.print()}
       className="text-sm text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
     >
-      Print Certificate of Authenticity
+      Print Certificate of Provenance
     </button>
   );
 }

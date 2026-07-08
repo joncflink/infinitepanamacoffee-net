@@ -1,6 +1,11 @@
 import Link from "next/link";
 import type { Coffee } from "@/data/coffees";
-import { AMAZON_STORE_URL, STATUS_LABELS, whatsAppUrl } from "@/data/coffees";
+import {
+  AMAZON_STORE_URL,
+  STATUS_LABELS,
+  formatLotDisplay,
+  whatsAppUrl,
+} from "@/data/coffees";
 import { OUR_PROMISE } from "@/data/site";
 import ReserveAction from "@/components/ReserveAction";
 import PrintCertificateButton from "@/components/PrintCertificateButton";
@@ -102,7 +107,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 href="#reserve"
                 className="rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5"
               >
-                Reserve / Reorder Coffee
+                Reserve Your Allocation
               </a>
               <a
                 href={contactUrl}
@@ -118,24 +123,32 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
 
         <Divider />
 
-        {/* Coffee Passport */}
+        {/* Infinite Coffee Passport */}
         <section
           id="passport"
           className="w-full max-w-2xl px-6 py-20 text-center sm:py-24"
         >
-          <h2 className="font-heading text-2xl text-forest">Coffee Passport™</h2>
+          <h2 className="font-heading text-2xl text-forest">
+            Infinite Coffee Passport™
+          </h2>
+          <p className="mt-2 text-sm tracking-wide text-soft-gray">
+            by Infinite Panama Coffee™
+          </p>
+          <p className="mx-auto mt-3 max-w-md text-sm italic text-soft-gray">
+            A permanent provenance record for this coffee.
+          </p>
           <dl className="mt-10 divide-y divide-gold/25 rounded-lg border border-gold/25 text-left">
             {passportRows.map(([label, key]) =>
               coffee[key] ? (
-                <div key={key} className="flex justify-between gap-6 px-6 py-4">
+                <div key={key} className="flex justify-between gap-6 px-6 py-5">
                   <dt className="text-sm leading-6 text-soft-gray">{label}</dt>
                   <dd className="text-right text-sm font-medium leading-6 text-charcoal">
-                    {coffee[key]}
+                    {key === "lotId" ? formatLotDisplay(coffee) : coffee[key]}
                   </dd>
                 </div>
               ) : null
             )}
-            <div className="flex justify-between gap-6 px-6 py-4">
+            <div className="flex justify-between gap-6 px-6 py-5">
               <dt className="text-sm leading-6 text-soft-gray">Status</dt>
               <dd className="text-right text-sm font-medium leading-6 text-charcoal">
                 {STATUS_LABELS[coffee.status]}
@@ -148,6 +161,33 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           <div className="mt-6">
             <PrintCertificateButton />
           </div>
+          <p className="mx-auto mt-6 max-w-md text-xs italic leading-6 text-soft-gray">
+            This passport permanently records the origin, harvest, process,
+            and journey of this coffee. No two Infinite Coffee Passports™
+            are ever the same.
+          </p>
+        </section>
+
+        <Divider />
+
+        {/* Founder's Notes */}
+        <section className="w-full max-w-xl px-6 py-20 text-center sm:py-24">
+          <h2 className="font-heading text-2xl text-forest">
+            Founder&rsquo;s Notes
+          </h2>
+          <p className="mx-auto mt-8 max-w-md text-base italic leading-8 text-charcoal">
+            &ldquo;I selected this coffee because it represents the kind of
+            long-term sourcing Infinite Panama Coffee was created to
+            support: patient, traceable, and rooted in place. This lot is
+            intentionally limited. It is not meant to be everything to
+            everyone. It is meant to be worthy of the Infinite name.&rdquo;
+          </p>
+          <p className="mt-6 font-heading text-lg italic tracking-wide text-forest/80">
+            Jon Flink
+          </p>
+          <p className="mt-1 text-xs text-soft-gray">
+            Founder, Infinite Panama Coffee™
+          </p>
         </section>
 
         <Divider />
@@ -156,8 +196,9 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
         <section className="w-full max-w-2xl px-6 py-20 text-center sm:py-24">
           <h2 className="font-heading text-2xl text-forest">Journey Timeline</h2>
           <p className="mx-auto mt-6 max-w-xl text-sm leading-6 text-soft-gray">
-            Every Infinite Passport™ tracks this coffee&rsquo;s path from seed
-            to import. Stages update as each milestone is confirmed.
+            Every Infinite Coffee Passport™ tracks this coffee&rsquo;s path
+            from seed to import. Stages update as each milestone is
+            confirmed.
           </p>
           <ol className="mx-auto mt-10 max-w-md text-left">
             {stages.map((stage, i) => (
@@ -206,28 +247,15 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                   <p className="mt-1 text-xs text-soft-gray">{option.sku}</p>
                 </div>
                 {coffee.status === "sold_out" ? (
-                  <div className="flex w-full flex-col items-center gap-3 sm:w-auto sm:items-end">
-                    <ReserveAction
-                      lotId={coffee.lotId}
-                      href={whatsAppUrl(
-                        coffee.productName,
-                        `${option.size} — Reserve List`
-                      )}
-                      label="Join Reserve List"
-                      className="w-full rounded-full bg-forest px-7 py-3.5 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"
-                    />
-                    <a
-                      href={whatsAppUrl(
-                        coffee.productName,
-                        `${option.size} — Notify Me`
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
-                    >
-                      Notify Me When Available
-                    </a>
-                  </div>
+                  <ReserveAction
+                    lotId={coffee.lotId}
+                    href={whatsAppUrl(
+                      coffee.productName,
+                      `${option.size} — Next Harvest List`
+                    )}
+                    label="Join Next Harvest List"
+                    className="w-full rounded-full bg-forest px-7 py-3.5 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"
+                  />
                 ) : (
                   <ReserveAction
                     lotId={coffee.lotId}
@@ -236,7 +264,9 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                       whatsAppUrl(coffee.productName, option.size)
                     }
                     label={
-                      option.amazonUrl ? "Reorder This Coffee" : "Reserve This Coffee"
+                      option.amazonUrl
+                        ? "Reorder This Coffee"
+                        : "Reserve This Allocation"
                     }
                     className="w-full rounded-full bg-forest px-7 py-3.5 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"
                   />
@@ -263,8 +293,8 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           <h2 className="font-heading text-2xl text-forest">Traceability</h2>
           <p className="mx-auto mt-8 max-w-xl text-base leading-8 text-charcoal">
             This lot originates from the Boquete growing region. Exact farm
-            coordinates will be added to this Passport once the producer is
-            confirmed.
+            coordinates will be added to this Infinite Coffee Passport™ once
+            the producer is confirmed.
           </p>
           <div className="mt-10 aspect-[16/7] w-full overflow-hidden rounded-lg">
             <iframe
@@ -345,7 +375,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
         <section className="w-full max-w-2xl px-6 py-20 text-center sm:py-24">
           <h2 className="font-heading text-2xl text-forest">Authenticity</h2>
           <div className="mx-auto mt-8 max-w-xl space-y-2 text-sm leading-6 text-charcoal">
-            <p>Authentic Infinite Passport™</p>
+            <p>Authentic Infinite Coffee Passport™</p>
             <p>Verified Infinite Panama Coffee Product</p>
             <p>Connected to Lot {coffee.lotId}</p>
           </div>
@@ -386,7 +416,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
         </section>
       </main>
 
-      {/* Certificate of Authenticity (print only) */}
+      {/* Certificate of Provenance (print only) */}
       <div className="hidden print:flex print:min-h-screen print:w-full print:flex-col print:items-center print:justify-center print:gap-6 print:p-16 print:text-center">
         <img
           src="/images/infinite-panama-coffee-logo.png"
@@ -395,12 +425,14 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           height={170}
         />
         <h1 className="font-heading text-2xl text-forest">
-          Certificate of Authenticity
+          Infinite Coffee Passport™
+          <br />
+          Certificate of Provenance
         </h1>
         <dl className="mt-4 space-y-2 text-sm text-charcoal">
           <div>
             <dt className="inline font-medium">Passport Number: </dt>
-            <dd className="inline">{coffee.lotId}</dd>
+            <dd className="inline">{formatLotDisplay(coffee)}</dd>
           </div>
           <div>
             <dt className="inline font-medium">Coffee: </dt>
@@ -412,7 +444,9 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           </div>
           <div>
             <dt className="inline font-medium">Producer: </dt>
-            <dd className="inline">{coffee.producer ?? "To be confirmed"}</dd>
+            <dd className="inline">
+              {coffee.producer ?? "Pending Producer Confirmation"}
+            </dd>
           </div>
           <div>
             <dt className="inline font-medium">Origin: </dt>
@@ -425,7 +459,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
         </dl>
         <img
           src={coffee.sizeOptions[0]?.qrCodePath}
-          alt="Infinite Passport QR Code"
+          alt="Infinite Coffee Passport QR Code"
           width={160}
           height={160}
         />
@@ -444,7 +478,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
             href="#passport"
             className="py-1 transition-colors duration-300 hover:text-forest"
           >
-            Coffee Passport
+            Infinite Coffee Passport
           </a>
           <a
             href="#reserve"

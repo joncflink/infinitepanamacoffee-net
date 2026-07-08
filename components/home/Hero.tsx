@@ -24,7 +24,7 @@ export default function Hero() {
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center px-6 py-20 text-center text-cream">
         <Mark variant="light" />
 
-        <p className="mt-5 text-xs tracking-[0.35em] text-gold">
+        <p className="mt-5 text-[0.83rem] tracking-[0.35em] text-gold">
           100% BOQUETE, PANAMA
         </p>
         <h1 className="mt-3 font-heading leading-tight">
@@ -47,13 +47,13 @@ export default function Hero() {
             href="/passport/IPC-ALT-001#reserve"
             className="rounded-full bg-gold px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-gold/90 hover:-translate-y-0.5"
           >
-            Reserve Your Coffee
+            Reserve Your Allocation
           </Link>
           <Link
             href="/passport/IPC-ALT-001#passport"
             className="rounded-full border border-cream/80 px-9 py-4 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:border-cream hover:bg-cream/10"
           >
-            Explore Coffee Passport™
+            Explore Infinite Coffee Passport™
           </Link>
         </div>
       </div>

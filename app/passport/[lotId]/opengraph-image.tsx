@@ -38,7 +38,7 @@ export default async function Image({
         </div>
         <div style={{ fontSize: 72, fontWeight: 700 }}>{name}</div>
         <div style={{ fontSize: 24, marginTop: 24, color: "#555555" }}>
-          Coffee Passport™ · {lot}
+          Infinite Coffee Passport™ · {lot}
         </div>
       </div>
     ),

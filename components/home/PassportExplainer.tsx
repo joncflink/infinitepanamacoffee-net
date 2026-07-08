@@ -7,7 +7,7 @@ export default function PassportExplainer() {
     <section className="w-full bg-forest px-6 py-28 text-cream sm:py-36">
       <ScrollReveal className="mx-auto max-w-2xl text-center">
         <h2 className="font-heading text-2xl sm:text-3xl">
-          The Infinite Passport™
+          The Infinite Coffee Passport™
         </h2>
         <p className="mx-auto mt-8 max-w-xl text-base leading-8 text-cream/90">
           Every bag carries a QR code. Scanning it opens that coffee&rsquo;s
@@ -28,7 +28,7 @@ export default function PassportExplainer() {
           href="/passport/IPC-ALT-001#passport"
           className="mt-12 inline-block rounded-full border border-gold px-9 py-[1.1rem] text-sm tracking-wide text-gold transition-all duration-300 ease-out hover:bg-gold/10 hover:-translate-y-0.5"
         >
-          Explore Coffee Passport™
+          Explore Infinite Coffee Passport™
         </Link>
       </ScrollReveal>
     </section>
