@@ -24,7 +24,7 @@ export default function CellarView() {
         </p>
         <Link
           href="/passport/IPC-ALT-001"
-          className="mt-8 inline-block rounded-full bg-forest px-9 py-4 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90"
+          className="mt-8 inline-block rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5"
         >
           Explore Coffee Passport™
         </Link>

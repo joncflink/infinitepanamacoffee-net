@@ -4,7 +4,7 @@ import { PASSPORT_FIELDS } from "@/data/site";
 
 export default function PassportExplainer() {
   return (
-    <section className="w-full bg-forest px-6 py-24 text-cream sm:py-32">
+    <section className="w-full bg-forest px-6 py-28 text-cream sm:py-36">
       <ScrollReveal className="mx-auto max-w-2xl text-center">
         <h2 className="font-heading text-2xl sm:text-3xl">
           The Infinite Passport™
@@ -26,7 +26,7 @@ export default function PassportExplainer() {
 
         <Link
           href="/passport/IPC-ALT-001#passport"
-          className="mt-12 inline-block rounded-full border border-gold px-9 py-4 text-sm tracking-wide text-gold transition-all duration-300 ease-out hover:bg-gold/10"
+          className="mt-12 inline-block rounded-full border border-gold px-9 py-[1.1rem] text-sm tracking-wide text-gold transition-all duration-300 ease-out hover:bg-gold/10 hover:-translate-y-0.5"
         >
           Explore Coffee Passport™
         </Link>

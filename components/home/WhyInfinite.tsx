@@ -3,7 +3,7 @@ import { WHY_INFINITE } from "@/data/site";
 
 export default function WhyInfinite() {
   return (
-    <section className="w-full max-w-4xl px-6 py-24 text-center sm:py-32">
+    <section className="w-full max-w-4xl px-6 py-28 text-center sm:py-36">
       <ScrollReveal>
         <h2 className="font-heading text-2xl text-forest sm:text-3xl">
           Why Infinite?

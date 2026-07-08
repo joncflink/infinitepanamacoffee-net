@@ -3,7 +3,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 
 export default function AboutBoquete() {
   return (
-    <section className="w-full max-w-5xl px-6 py-24 sm:py-32">
+    <section className="w-full max-w-5xl px-6 py-28 sm:py-36">
       <ScrollReveal className="mx-auto max-w-2xl text-center">
         <h2 className="font-heading text-2xl text-forest sm:text-3xl">
           About Boquete

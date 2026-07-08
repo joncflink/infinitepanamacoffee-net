@@ -199,7 +199,7 @@ export default function FoundersLetterPage() {
       <div className="mt-12 text-center">
         <Link
           href="/passport/IPC-ALT-001#passport"
-          className="inline-block rounded-full bg-forest px-9 py-4 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90"
+          className="inline-block rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5"
         >
           Explore the Infinite Passport™
         </Link>

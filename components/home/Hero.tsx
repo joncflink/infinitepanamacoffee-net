@@ -17,23 +17,23 @@ export default function Hero() {
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(31,77,58,0.62) 0%, rgba(31,77,58,0.45) 40%, rgba(31,77,58,0.8) 100%)",
+            "linear-gradient(180deg, rgba(31,77,58,0.68) 0%, rgba(31,77,58,0.51) 40%, rgba(31,77,58,0.86) 100%)",
         }}
       />
 
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center px-6 py-20 text-center text-cream">
         <Mark variant="light" />
 
-        <p className="mt-9 text-xs tracking-[0.35em] text-gold">
+        <p className="mt-12 text-xs tracking-[0.35em] text-gold">
           100% BOQUETE, PANAMA
         </p>
-        <h1 className="mt-5 font-heading text-4xl leading-tight sm:text-6xl">
+        <h1 className="mt-6 font-heading text-4xl leading-tight sm:text-6xl">
           Infinite Select™
           <br />
           ALTURA
         </h1>
         <p className="mt-6 text-lg text-cream">
-          Specialty Green Coffee Beans
+          Rare Green Coffee from the Highlands of Boquete
         </p>
         <p className="mt-3 text-sm italic tracking-wide text-cream/90">
           Selected with patience.
@@ -44,7 +44,7 @@ export default function Hero() {
         <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href="/passport/IPC-ALT-001#reserve"
-            className="rounded-full bg-gold px-9 py-4 text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-gold/90"
+            className="rounded-full bg-gold px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-gold/90 hover:-translate-y-0.5"
           >
             Reserve Your Coffee
           </Link>

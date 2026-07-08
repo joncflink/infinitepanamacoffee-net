@@ -3,7 +3,7 @@ import { AMAZON_STORE_URL, whatsAppUrl } from "@/data/coffees";
 
 export default function Contact() {
   return (
-    <section className="w-full max-w-xl px-6 py-24 text-center sm:py-32">
+    <section className="w-full max-w-xl px-6 py-28 text-center sm:py-36">
       <ScrollReveal>
         <h2 className="font-heading text-2xl text-forest sm:text-3xl">
           Contact
@@ -17,7 +17,7 @@ export default function Contact() {
             href={whatsAppUrl("Altura")}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full rounded-full bg-forest px-9 py-4 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 sm:w-auto"
+            className="w-full rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"
           >
             WhatsApp
           </a>
@@ -25,7 +25,7 @@ export default function Contact() {
             href={AMAZON_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full rounded-full border border-forest px-9 py-4 text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-forest/5 sm:w-auto"
+            className="w-full rounded-full border border-forest px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-forest/5 hover:-translate-y-0.5 sm:w-auto"
           >
             Amazon Store
           </a>

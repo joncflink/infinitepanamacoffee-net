@@ -71,7 +71,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
             <div className="flex flex-col items-center gap-5">
               <a
                 href="#reserve"
-                className="rounded-full bg-forest px-9 py-4 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90"
+                className="rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5"
               >
                 Reserve / Reorder Coffee
               </a>
@@ -147,7 +147,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                         `${option.size} — Reserve List`
                       )}
                       label="Join Reserve List"
-                      className="w-full rounded-full bg-forest px-7 py-3 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 sm:w-auto"
+                      className="w-full rounded-full bg-forest px-7 py-3.5 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"
                     />
                     <a
                       href={whatsAppUrl(
@@ -171,7 +171,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                     label={
                       option.amazonUrl ? "Reorder This Coffee" : "Reserve This Coffee"
                     }
-                    className="w-full rounded-full bg-forest px-7 py-3 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 sm:w-auto"
+                    className="w-full rounded-full bg-forest px-7 py-3.5 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"
                   />
                 )}
               </div>
@@ -266,7 +266,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
               href={contactUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full rounded-full bg-gold px-9 py-4 text-sm tracking-wide text-charcoal transition-all duration-300 ease-out hover:bg-gold/90 sm:w-auto"
+              className="w-full rounded-full bg-gold px-9 py-[1.1rem] text-sm tracking-wide text-charcoal transition-all duration-300 ease-out hover:bg-gold/90 hover:-translate-y-0.5 sm:w-auto"
             >
               Message on WhatsApp
             </a>
@@ -274,7 +274,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
               href={AMAZON_STORE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full rounded-full border border-cream px-9 py-4 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-cream/10 sm:w-auto"
+              className="w-full rounded-full border border-cream px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-cream/10 hover:-translate-y-0.5 sm:w-auto"
             >
               Visit Amazon Store
             </a>

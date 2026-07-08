@@ -5,7 +5,7 @@ import { FOUNDER } from "@/data/site";
 
 export default function Founder() {
   return (
-    <section className="w-full max-w-4xl px-6 py-24 sm:py-36">
+    <section className="w-full max-w-4xl px-6 py-28 sm:py-40">
       <ScrollReveal className="mx-auto flex flex-col items-center gap-12 sm:flex-row sm:items-start sm:gap-20">
         <div className="relative aspect-[3/4] w-52 shrink-0 overflow-hidden rounded-xl shadow-[0_10px_40px_rgba(31,77,58,0.14)] sm:w-60">
           <Image
@@ -37,7 +37,7 @@ export default function Founder() {
 
           <Link
             href="/founders-letter"
-            className="mt-10 inline-block rounded-full border border-forest px-9 py-4 text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-forest/5"
+            className="mt-10 inline-block rounded-full border border-forest px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-forest/5 hover:-translate-y-0.5"
           >
             Read the Founder&rsquo;s Letter
           </Link>
