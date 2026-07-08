@@ -128,3 +128,10 @@ export function formatLotDisplay(coffee: Coffee): string {
   const year = coffee.harvest.match(/\d{4}/)?.[0];
   return [parts[0], year, parts[1], parts[2]].filter(Boolean).join(" • ");
 }
+
+/** Compact serial-number format for the certificate, e.g. "IPC-ALT-001" -> "IPC•2025•ALT•001" (no spaces around separators). */
+export function formatLotDisplayCompact(coffee: Coffee): string {
+  const parts = coffee.lotId.split("-");
+  const year = coffee.harvest.match(/\d{4}/)?.[0];
+  return [parts[0], year, parts[1], parts[2]].filter(Boolean).join("•");
+}

@@ -24,16 +24,16 @@ export default function Hero() {
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center px-6 py-20 text-center text-cream">
         <Mark variant="light" />
 
-        <p className="mt-5 text-[0.83rem] tracking-[0.35em] text-gold">
+        <p className="mt-4 text-[0.91rem] tracking-[0.35em] text-gold">
           100% BOQUETE, PANAMA
         </p>
-        <h1 className="mt-3 font-heading leading-tight">
+        <h1 className="mt-2 font-heading leading-tight">
           <span className="block text-4xl sm:text-6xl">Infinite Select™</span>
-          <span className="mt-1 block text-[1.65rem] tracking-wide sm:text-[2.75rem]">
+          <span className="block text-[1.65rem] tracking-wide sm:text-[2.75rem]">
             Altura
           </span>
         </h1>
-        <p className="mt-4 text-lg text-cream">
+        <p className="mt-3 text-lg text-cream">
           Rare Green Coffee from the Highlands of Boquete
         </p>
         <p className="mt-3 text-sm italic tracking-wide text-cream/90">

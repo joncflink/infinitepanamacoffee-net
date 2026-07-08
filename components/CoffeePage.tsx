@@ -4,6 +4,7 @@ import {
   AMAZON_STORE_URL,
   STATUS_LABELS,
   formatLotDisplay,
+  formatLotDisplayCompact,
   whatsAppUrl,
 } from "@/data/coffees";
 import { OUR_PROMISE } from "@/data/site";
@@ -32,13 +33,13 @@ const passportRows: Array<[string, StringCoffeeKey]> = [
   ["Coffee", "productName"],
   ["Product Type", "productType"],
   ["Origin", "origin"],
-  ["Process", "process"],
   ["Harvest", "harvest"],
   ["Lot", "lotId"],
-  ["Variety", "variety"],
-  ["Elevation", "elevation"],
   ["Producer", "producer"],
   ["Exporter", "exporter"],
+  ["Process", "process"],
+  ["Elevation", "elevation"],
+  ["Variety", "variety"],
 ];
 
 const journeyStages = (coffee: Coffee) => [
@@ -90,11 +91,11 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 <span className="block text-3xl sm:text-5xl">
                   {coffee.collection}
                 </span>
-                <span className="mt-1 block text-[1.4rem] tracking-wide sm:text-[2.25rem]">
+                <span className="block text-[1.4rem] tracking-wide sm:text-[2.25rem]">
                   {coffee.productName}
                 </span>
               </h1>
-              <p className="mt-4 text-lg text-charcoal">
+              <p className="mt-3 text-lg text-charcoal">
                 {coffee.productType} from {originShort}
               </p>
               <p className="mt-3 text-sm italic text-soft-gray">
@@ -140,7 +141,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           <dl className="mt-10 divide-y divide-gold/25 rounded-lg border border-gold/25 text-left">
             {passportRows.map(([label, key]) =>
               coffee[key] ? (
-                <div key={key} className="flex justify-between gap-6 px-6 py-5">
+                <div key={key} className="flex justify-between gap-6 px-6 py-6">
                   <dt className="text-sm leading-6 text-soft-gray">{label}</dt>
                   <dd className="text-right text-sm font-medium leading-6 text-charcoal">
                     {key === "lotId" ? formatLotDisplay(coffee) : coffee[key]}
@@ -148,10 +149,15 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 </div>
               ) : null
             )}
-            <div className="flex justify-between gap-6 px-6 py-5">
+            <div className="flex justify-between gap-6 px-6 py-6">
               <dt className="text-sm leading-6 text-soft-gray">Status</dt>
-              <dd className="text-right text-sm font-medium leading-6 text-charcoal">
-                {STATUS_LABELS[coffee.status]}
+              <dd className="text-right">
+                <span className="flex items-center justify-end gap-1.5 text-xs font-medium tracking-[0.15em] text-forest">
+                  <span className="text-gold">●</span>VERIFIED
+                </span>
+                <span className="mt-1 block text-sm font-medium leading-6 text-charcoal">
+                  {STATUS_LABELS[coffee.status]}
+                </span>
               </dd>
             </div>
           </dl>
@@ -171,18 +177,18 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
         <Divider />
 
         {/* Founder's Notes */}
-        <section className="w-full max-w-xl px-6 py-20 text-center sm:py-24">
-          <h2 className="font-heading text-2xl text-forest">
+        <section className="w-full max-w-xl px-6 py-16 text-center sm:py-20">
+          <h2 className="font-heading text-xl text-forest/90">
             Founder&rsquo;s Notes
           </h2>
-          <p className="mx-auto mt-8 max-w-md text-base italic leading-8 text-charcoal">
+          <p className="mx-auto mt-7 max-w-md text-sm italic leading-8 text-charcoal">
             &ldquo;I selected this coffee because it represents the kind of
             long-term sourcing Infinite Panama Coffee was created to
             support: patient, traceable, and rooted in place. This lot is
             intentionally limited. It is not meant to be everything to
             everyone. It is meant to be worthy of the Infinite name.&rdquo;
           </p>
-          <p className="mt-6 font-heading text-lg italic tracking-wide text-forest/80">
+          <p className="mt-5 font-heading text-base italic tracking-wide text-forest/70">
             Jon Flink
           </p>
           <p className="mt-1 text-xs text-soft-gray">
@@ -385,6 +391,39 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           </p>
         </section>
 
+        <Divider />
+
+        {/* The Living Passport */}
+        <section className="w-full max-w-3xl px-6 py-20 text-center sm:py-24">
+          <h2 className="font-heading text-2xl text-forest">
+            The Living Passport
+          </h2>
+          <p className="mx-auto mt-8 max-w-xl text-base leading-8 text-charcoal">
+            This Infinite Coffee Passport™ will continue to grow. The
+            following will appear here as Infinite Panama Coffee&rsquo;s
+            verification system comes online.
+          </p>
+          <div className="mt-12 grid grid-cols-2 gap-5 sm:grid-cols-4">
+            {[
+              "Passport History",
+              "Verification History",
+              "Producer Notes",
+              "Harvest Updates",
+              "Cellar Status",
+              "Owner Notes",
+              "Verification Count",
+              "Future Release Availability",
+            ].map((label) => (
+              <div
+                key={label}
+                className="rounded-lg border border-dashed border-gold/25 px-4 py-8 text-sm leading-6 text-soft-gray"
+              >
+                {label}
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Reserve / Reorder */}
         <section
           id="reserve"
@@ -417,22 +456,31 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
       </main>
 
       {/* Certificate of Provenance (print only) */}
-      <div className="hidden print:flex print:min-h-screen print:w-full print:flex-col print:items-center print:justify-center print:gap-6 print:p-16 print:text-center">
+      <div className="relative hidden print:flex print:min-h-screen print:w-full print:flex-col print:items-center print:justify-center print:gap-7 print:p-16 print:text-center">
         <img
           src="/images/infinite-panama-coffee-logo.png"
           alt="Infinite Panama Coffee"
-          width={300}
-          height={170}
+          width={220}
+          height={125}
         />
-        <h1 className="font-heading text-2xl text-forest">
-          Infinite Coffee Passport™
-          <br />
-          Certificate of Provenance
-        </h1>
-        <dl className="mt-4 space-y-2 text-sm text-charcoal">
+        <div>
+          <p className="text-xs tracking-[0.3em] text-soft-gray">
+            INFINITE PANAMA COFFEE
+          </p>
+          <h1 className="mt-3 font-heading text-2xl text-forest">
+            Certificate of Provenance
+          </h1>
+          <p className="mt-2 text-sm tracking-wide text-soft-gray">
+            Infinite Coffee Passport™
+          </p>
+        </div>
+
+        <div className="h-px w-16 bg-gold/60" />
+
+        <dl className="space-y-2 text-sm text-charcoal">
           <div>
-            <dt className="inline font-medium">Passport Number: </dt>
-            <dd className="inline">{formatLotDisplay(coffee)}</dd>
+            <dt className="inline font-medium">Passport No.: </dt>
+            <dd className="inline">{formatLotDisplayCompact(coffee)}</dd>
           </div>
           <div>
             <dt className="inline font-medium">Coffee: </dt>
@@ -457,14 +505,26 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
             <dd className="inline">{coffee.createdAt}</dd>
           </div>
         </dl>
+
         <img
           src={coffee.sizeOptions[0]?.qrCodePath}
           alt="Infinite Coffee Passport QR Code"
-          width={160}
-          height={160}
+          width={182}
+          height={182}
         />
-        <p className="text-xs text-soft-gray">
-          infinitepanamacoffee.com/passport/{coffee.lotId}
+        <p className="max-w-[220px] text-xs leading-5 text-soft-gray">
+          Scan to verify this passport in the Infinite Coffee Passport™
+          Registry.
+        </p>
+
+        <div className="mt-2 text-xs leading-6 text-soft-gray">
+          <p>Authenticated by</p>
+          <p className="font-medium text-forest">Infinite Coffee Passport™</p>
+          <p>www.infinitepanamacoffee.com</p>
+        </div>
+
+        <p className="absolute bottom-10 right-14 text-[10px] tracking-wide text-soft-gray/70">
+          Registry Edition 1.0
         </p>
       </div>
 
