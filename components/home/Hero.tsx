@@ -24,15 +24,16 @@ export default function Hero() {
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center px-6 py-20 text-center text-cream">
         <Mark variant="light" />
 
-        <p className="mt-12 text-xs tracking-[0.35em] text-gold">
+        <p className="mt-5 text-xs tracking-[0.35em] text-gold">
           100% BOQUETE, PANAMA
         </p>
-        <h1 className="mt-6 font-heading text-4xl leading-tight sm:text-6xl">
-          Infinite Select™
-          <br />
-          ALTURA
+        <h1 className="mt-3 font-heading leading-tight">
+          <span className="block text-4xl sm:text-6xl">Infinite Select™</span>
+          <span className="mt-1 block text-[1.65rem] tracking-wide sm:text-[2.75rem]">
+            Altura
+          </span>
         </h1>
-        <p className="mt-6 text-lg text-cream">
+        <p className="mt-4 text-lg text-cream">
           Rare Green Coffee from the Highlands of Boquete
         </p>
         <p className="mt-3 text-sm italic tracking-wide text-cream/90">
@@ -41,7 +42,7 @@ export default function Hero() {
           Built for generations.
         </p>
 
-        <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
+        <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href="/passport/IPC-ALT-001#reserve"
             className="rounded-full bg-gold px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-gold/90 hover:-translate-y-0.5"
