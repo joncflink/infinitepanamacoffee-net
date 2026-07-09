@@ -17,18 +17,24 @@ export default function QrScanLogger({ lotId }: { lotId: string }) {
     if (logged.current) return;
     logged.current = true;
 
-    const supabase = createClient();
-    supabase
-      .from("qr_scan_events")
-      .insert({
-        lot_id: lotId,
-        referrer: document.referrer || null,
-        user_agent: navigator.userAgent,
-        device_type: detectDeviceType(navigator.userAgent),
-      })
-      .then(({ error }) => {
-        if (error) console.error("qr_scan_event log failed:", error.message);
-      });
+    try {
+      const supabase = createClient();
+      supabase
+        .from("qr_scan_events")
+        .insert({
+          lot_id: lotId,
+          referrer: document.referrer || null,
+          user_agent: navigator.userAgent,
+          device_type: detectDeviceType(navigator.userAgent),
+        })
+        .then(({ error }) => {
+          if (error) console.error("qr_scan_event log failed:", error.message);
+        });
+    } catch (err) {
+      // createClient() throws synchronously if env vars are missing/invalid —
+      // catch that too, not just the insert's promise rejection.
+      console.error("qr_scan_event log failed:", err);
+    }
   }, [lotId]);
 
   return null;

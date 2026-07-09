@@ -18,15 +18,21 @@ export function logReorderEvent(params: {
   action: ReorderAction;
   destinationUrl: string;
 }): void {
-  const supabase = createClient();
-  supabase
-    .from("reorder_events")
-    .insert({
-      lot_id: params.lotId,
-      action: params.action,
-      destination_url: params.destinationUrl,
-    })
-    .then(({ error }) => {
-      if (error) console.error("reorder_event log failed:", error.message);
-    });
+  try {
+    const supabase = createClient();
+    supabase
+      .from("reorder_events")
+      .insert({
+        lot_id: params.lotId,
+        action: params.action,
+        destination_url: params.destinationUrl,
+      })
+      .then(({ error }) => {
+        if (error) console.error("reorder_event log failed:", error.message);
+      });
+  } catch (err) {
+    // createClient() throws synchronously if env vars are missing/invalid —
+    // catch that too, not just the insert's promise rejection.
+    console.error("reorder_event log failed:", err);
+  }
 }
