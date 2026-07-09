@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getCoffeeByLot } from "@/data/coffees";
+import { getCoffeeByPassportNumber } from "@/data/coffees";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -7,11 +7,11 @@ export const contentType = "image/png";
 export default async function Image({
   params,
 }: {
-  params: { lotId: string };
+  params: { passportNumber: string };
 }) {
-  const coffee = getCoffeeByLot(params.lotId);
-  const name = coffee?.productName.toUpperCase() ?? "COFFEE";
-  const lot = coffee?.lotId ?? "";
+  const coffee = getCoffeeByPassportNumber(params.passportNumber);
+  const name = coffee?.coffeeName.toUpperCase() ?? "COFFEE";
+  const passportNumber = coffee?.passportNumber ?? "";
 
   return new ImageResponse(
     (
@@ -38,7 +38,7 @@ export default async function Image({
         </div>
         <div style={{ fontSize: 72, fontWeight: 700 }}>{name}</div>
         <div style={{ fontSize: 24, marginTop: 24, color: "#555555" }}>
-          Infinite Coffee Passport™ · {lot}
+          Infinite Coffee Passport™ · {passportNumber}
         </div>
       </div>
     ),

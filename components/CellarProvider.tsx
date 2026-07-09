@@ -12,9 +12,9 @@ import {
 
 type CellarContextValue = {
   items: CellarItem[];
-  isSaved: (lotId: string) => boolean;
-  add: (lotId: string) => void;
-  remove: (lotId: string) => void;
+  isSaved: (passportNumber: string) => boolean;
+  add: (passportNumber: string) => void;
+  remove: (passportNumber: string) => void;
 };
 
 const CellarContext = createContext<CellarContextValue | null>(null);
@@ -26,10 +26,10 @@ export function CellarProvider({ children }: { children: React.ReactNode }) {
     getServerCellarSnapshot
   );
 
-  const add = useCallback((lotId: string) => addToCellar(lotId), []);
-  const remove = useCallback((lotId: string) => removeFromCellar(lotId), []);
+  const add = useCallback((passportNumber: string) => addToCellar(passportNumber), []);
+  const remove = useCallback((passportNumber: string) => removeFromCellar(passportNumber), []);
   const isSaved = useCallback(
-    (lotId: string) => items.some((item) => item.lotId === lotId),
+    (passportNumber: string) => items.some((item) => item.passportNumber === passportNumber),
     [items]
   );
 

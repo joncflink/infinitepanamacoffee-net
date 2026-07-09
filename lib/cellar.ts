@@ -9,7 +9,7 @@
  */
 
 export type CellarItem = {
-  lotId: string;
+  passportNumber: string;
   savedAt: string;
 };
 
@@ -63,12 +63,12 @@ function writeCellar(items: CellarItem[]): void {
   emitChange();
 }
 
-export function addToCellar(lotId: string): void {
+export function addToCellar(passportNumber: string): void {
   const items = readCellar();
-  if (items.some((item) => item.lotId === lotId)) return;
-  writeCellar([...items, { lotId, savedAt: new Date().toISOString() }]);
+  if (items.some((item) => item.passportNumber === passportNumber)) return;
+  writeCellar([...items, { passportNumber, savedAt: new Date().toISOString() }]);
 }
 
-export function removeFromCellar(lotId: string): void {
-  writeCellar(readCellar().filter((item) => item.lotId !== lotId));
+export function removeFromCellar(passportNumber: string): void {
+  writeCellar(readCellar().filter((item) => item.passportNumber !== passportNumber));
 }

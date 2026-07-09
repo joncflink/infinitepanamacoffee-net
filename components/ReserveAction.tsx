@@ -21,7 +21,7 @@ export default function ReserveAction({
 }) {
   const [clicked, setClicked] = useState(false);
   const { isSaved, add } = useCellar();
-  const saved = isSaved(lotId);
+  const saved = isSaved(passportNumber);
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -45,7 +45,7 @@ export default function ReserveAction({
         ) : (
           <button
             type="button"
-            onClick={() => add(lotId)}
+            onClick={() => add(passportNumber)}
             className="text-xs text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
           >
             Add to My Infinite Cellar™

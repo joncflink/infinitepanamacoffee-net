@@ -3,7 +3,7 @@
  *
  * Usage:
  *   npx tsx scripts/generate-qr.ts               generate any missing files for every coffee
- *   npx tsx scripts/generate-qr.ts IPC-ALT-001    only this lot
+ *   npx tsx scripts/generate-qr.ts IPC-ALT-001    only this passport number
  *   npx tsx scripts/generate-qr.ts --force        regenerate everything, overwriting existing files
  *
  * SAFETY: by default this never overwrites an existing file. Printed QR
@@ -12,14 +12,15 @@
  * printer must never be silently regenerated. Only pass --force when you
  * specifically intend to replace an asset that has NOT gone to print.
  *
- * For each coffee this writes four files to /public/qr/:
- *   [lotId].svg              plain, black-on-white, no icon (max-reliability fallback)
- *   [lotId]-1024.png         plain, rasterized
- *   [lotId]-branded.svg      brand-colored (forest/cream) with the Infinite icon centered
- *   [lotId]-branded-1024.png branded, rasterized
+ * For each coffee this writes four files to /public/qr/, keyed on the
+ * coffee's permanent passportNumber (never its name or lot number):
+ *   [passportNumber].svg              plain, black-on-white, no icon (max-reliability fallback)
+ *   [passportNumber]-1024.png         plain, rasterized
+ *   [passportNumber]-branded.svg      brand-colored (forest/cream) with the Infinite icon centered
+ *   [passportNumber]-branded-1024.png branded, rasterized
  *
  * All encode the exact same canonical URL:
- *   https://infinitepanamacoffee.com/passport/[lotId]
+ *   https://infinitepanamacoffee.com/passport/[passportNumber]
  * No query string — a param can never be added retroactively to an
  * already-printed label, so the canonical QR destination stays bare.
  */
@@ -101,22 +102,22 @@ async function writeIfAllowed(
 async function main() {
   const args = process.argv.slice(2);
   const force = args.includes("--force");
-  const onlyLotId = args.find((a) => !a.startsWith("--"));
+  const onlyPassportNumber = args.find((a) => !a.startsWith("--"));
 
   await mkdir(OUT_DIR, { recursive: true });
 
-  const targets = onlyLotId
-    ? coffees.filter((c) => c.lotId === onlyLotId.toUpperCase())
+  const targets = onlyPassportNumber
+    ? coffees.filter((c) => c.passportNumber === onlyPassportNumber.toUpperCase())
     : coffees;
 
   if (targets.length === 0) {
-    console.error(`No coffee found for lot "${onlyLotId}"`);
+    console.error(`No coffee found for passport number "${onlyPassportNumber}"`);
     process.exit(1);
   }
 
   for (const coffee of targets) {
-    const url = `${CANONICAL_ORIGIN}/passport/${coffee.lotId}`;
-    console.log(`\n${coffee.lotId} -> ${url}`);
+    const url = `${CANONICAL_ORIGIN}/passport/${coffee.passportNumber}`;
+    console.log(`\n${coffee.passportNumber} -> ${url}`);
 
     const plainSvg = await QRCode.toString(url, {
       type: "svg",
@@ -132,23 +133,23 @@ async function main() {
     });
     const brandedSvg = brandSvg(brandedBaseSvg);
 
-    await writeIfAllowed(path.join(OUT_DIR, `${coffee.lotId}.svg`), plainSvg, force);
+    await writeIfAllowed(path.join(OUT_DIR, `${coffee.passportNumber}.svg`), plainSvg, force);
     await writeIfAllowed(
-      path.join(OUT_DIR, `${coffee.lotId}-branded.svg`),
+      path.join(OUT_DIR, `${coffee.passportNumber}-branded.svg`),
       brandedSvg,
       force
     );
 
     const plainPng1024 = await svgToPng(plainSvg, 1024);
     await writeIfAllowed(
-      path.join(OUT_DIR, `${coffee.lotId}-1024.png`),
+      path.join(OUT_DIR, `${coffee.passportNumber}-1024.png`),
       plainPng1024,
       force
     );
 
     const brandedPng1024 = await svgToPng(brandedSvg, 1024);
     await writeIfAllowed(
-      path.join(OUT_DIR, `${coffee.lotId}-branded-1024.png`),
+      path.join(OUT_DIR, `${coffee.passportNumber}-branded-1024.png`),
       brandedPng1024,
       force
     );

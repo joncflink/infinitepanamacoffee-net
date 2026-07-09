@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCellar } from "@/components/CellarProvider";
-import { getCoffeeByLot, type Coffee } from "@/data/coffees";
+import { getCoffeeByPassportNumber, getFullName, type Coffee } from "@/data/coffees";
 import type { CellarItem } from "@/lib/cellar";
 
 type SavedEntry = { item: CellarItem; coffee: Coffee };
@@ -11,7 +11,7 @@ export default function CellarView() {
   const { items, remove } = useCellar();
 
   const saved: SavedEntry[] = items.flatMap((item) => {
-    const coffee = getCoffeeByLot(item.lotId);
+    const coffee = getCoffeeByPassportNumber(item.passportNumber);
     return coffee ? [{ item, coffee }] : [];
   });
 
@@ -23,10 +23,10 @@ export default function CellarView() {
           it to start your collection.
         </p>
         <Link
-          href="/passport/IPC-ALT-001"
+          href="/"
           className="mt-8 inline-block rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5"
         >
-          Explore Infinite Coffee Passport™
+          Explore the Coffee Collection
         </Link>
       </div>
     );
@@ -36,28 +36,28 @@ export default function CellarView() {
     <div className="space-y-4">
       {saved.map(({ item, coffee }) => (
         <div
-          key={item.lotId}
+          key={item.passportNumber}
           className="flex flex-col items-center justify-between gap-4 rounded-lg border border-gold/25 px-6 py-5 text-left sm:flex-row"
         >
           <div>
             <p className="font-heading text-lg text-forest">
-              {coffee.fullName}
+              {getFullName(coffee)}
             </p>
             <p className="mt-1 text-xs text-soft-gray">
-              {coffee.lotId} &middot; Saved{" "}
+              {coffee.passportNumber} &middot; Saved{" "}
               {new Date(item.savedAt).toLocaleDateString()}
             </p>
           </div>
           <div className="flex items-center gap-5">
             <Link
-              href={`/passport/${coffee.lotId}`}
+              href={`/passport/${coffee.passportNumber}`}
               className="text-sm text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
             >
               View Passport
             </Link>
             <button
               type="button"
-              onClick={() => remove(item.lotId)}
+              onClick={() => remove(item.passportNumber)}
               className="text-sm text-soft-gray underline underline-offset-4 transition-colors duration-300 hover:text-forest"
             >
               Remove

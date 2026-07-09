@@ -1,7 +1,9 @@
 import ScrollReveal from "@/components/ScrollReveal";
-import { AMAZON_STORE_URL, whatsAppUrl } from "@/data/coffees";
+import { AMAZON_STORE_URL, getFeaturedCoffee, whatsAppUrl } from "@/data/coffees";
 
 export default function Contact() {
+  const featured = getFeaturedCoffee();
+
   return (
     <section className="w-full max-w-xl px-6 py-28 text-center sm:py-36">
       <ScrollReveal>
@@ -14,7 +16,7 @@ export default function Contact() {
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <a
-            href={whatsAppUrl("Altura")}
+            href={whatsAppUrl(featured.coffeeName)}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"

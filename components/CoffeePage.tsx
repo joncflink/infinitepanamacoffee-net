@@ -2,9 +2,12 @@ import Link from "next/link";
 import type { Coffee } from "@/data/coffees";
 import {
   AMAZON_STORE_URL,
+  BRAND,
   STATUS_LABELS,
-  formatLotDisplay,
-  formatLotDisplayCompact,
+  formatPassportDisplay,
+  formatPassportDisplayCompact,
+  getFullName,
+  getQrPaths,
   whatsAppUrl,
 } from "@/data/coffees";
 import { OUR_PROMISE } from "@/data/site";
@@ -17,32 +20,27 @@ function Divider() {
   return <hr className="mx-auto my-4 w-24 border-t border-gold/60" />;
 }
 
-type StringCoffeeKey =
-  | "collection"
-  | "productName"
-  | "productType"
-  | "origin"
-  | "process"
-  | "harvest"
-  | "lotId"
-  | "variety"
-  | "elevation"
-  | "producer"
-  | "exporter";
-
-const passportRows: Array<[string, StringCoffeeKey]> = [
-  ["Collection", "collection"],
-  ["Coffee", "productName"],
-  ["Product Type", "productType"],
-  ["Origin", "origin"],
-  ["Harvest", "harvest"],
-  ["Lot", "lotId"],
-  ["Producer", "producer"],
-  ["Exporter", "exporter"],
-  ["Process", "process"],
-  ["Elevation", "elevation"],
-  ["Variety", "variety"],
-];
+/** Rows shown in the Infinite Coffee Passport table: BRAND constants (always shown) plus per-coffee fields (shown only when set). */
+function getPassportRows(coffee: Coffee): Array<[string, string]> {
+  const rows: Array<[string, string | undefined]> = [
+    ["Collection", BRAND.collection],
+    ["Coffee", coffee.coffeeName],
+    ["Product Type", BRAND.productType],
+    ["Origin", BRAND.origin],
+    ["Harvest", coffee.harvest],
+    ["Packed On", coffee.packedOn],
+    ["Best By", coffee.bestBy],
+    ["Passport No.", formatPassportDisplay(coffee)],
+    ["Lot Number", coffee.lotNumber],
+    ["Producer", coffee.producer],
+    ["Farm", coffee.farm],
+    ["Exporter", coffee.exporter],
+    ["Process", coffee.process],
+    ["Elevation", coffee.elevation],
+    ["Variety", coffee.variety],
+  ];
+  return rows.filter((row): row is [string, string] => Boolean(row[1]));
+}
 
 const journeyStages = (coffee: Coffee) => [
   {
@@ -69,14 +67,16 @@ const journeyStages = (coffee: Coffee) => [
 ];
 
 export default function CoffeePage({ coffee }: { coffee: Coffee }) {
-  const originParts = coffee.origin.split(", ");
+  const originParts = BRAND.origin.split(", ");
   const originShort = `${originParts[0]}, ${originParts[originParts.length - 1]}`;
-  const contactUrl = whatsAppUrl(coffee.productName);
+  const contactUrl = whatsAppUrl(coffee.coffeeName);
   const stages = journeyStages(coffee);
+  const passportRows = getPassportRows(coffee);
+  const qrPaths = getQrPaths(coffee);
 
   return (
     <>
-      <QrScanLogger lotId={coffee.lotId} passportNumber={coffee.lotId} />
+      <QrScanLogger lotId={coffee.lotNumber} passportNumber={coffee.passportNumber} />
       <main className="flex flex-1 flex-col items-center print:hidden">
         {/* Hero */}
         <section className="w-full bg-cream px-6 py-20 text-center text-forest sm:py-28">
@@ -92,14 +92,14 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
             <div>
               <h1 className="font-heading leading-tight">
                 <span className="block text-3xl sm:text-5xl">
-                  {coffee.collection}
+                  {BRAND.collection}
                 </span>
                 <span className="block text-[1.4rem] tracking-wide sm:text-[2.25rem]">
-                  {coffee.productName}
+                  {coffee.coffeeName}
                 </span>
               </h1>
               <p className="mt-3 text-lg text-charcoal">
-                {coffee.productType} from {originShort}
+                {BRAND.productType} from {originShort}
               </p>
               <p className="mt-3 text-sm italic text-soft-gray">
                 Selected with patience. Built for generations.
@@ -114,8 +114,8 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 Reserve Your Allocation
               </a>
               <TrackedLink
-                lotId={coffee.lotId}
-                passportNumber={coffee.lotId}
+                lotId={coffee.lotNumber}
+                passportNumber={coffee.passportNumber}
                 action="whatsapp_clicked"
                 href={contactUrl}
                 className="py-1 text-sm text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
@@ -143,16 +143,14 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
             A permanent provenance record for this coffee.
           </p>
           <dl className="mt-10 divide-y divide-gold/25 rounded-lg border border-gold/25 text-left">
-            {passportRows.map(([label, key]) =>
-              coffee[key] ? (
-                <div key={key} className="flex justify-between gap-6 px-6 py-6">
-                  <dt className="text-sm leading-6 text-soft-gray">{label}</dt>
-                  <dd className="text-right text-sm font-medium leading-6 text-charcoal">
-                    {key === "lotId" ? formatLotDisplay(coffee) : coffee[key]}
-                  </dd>
-                </div>
-              ) : null
-            )}
+            {passportRows.map(([label, value]) => (
+              <div key={label} className="flex justify-between gap-6 px-6 py-6">
+                <dt className="text-sm leading-6 text-soft-gray">{label}</dt>
+                <dd className="text-right text-sm font-medium leading-6 text-charcoal">
+                  {value}
+                </dd>
+              </div>
+            ))}
             <div className="flex justify-between gap-6 px-6 py-6">
               <dt className="text-sm leading-6 text-soft-gray">Status</dt>
               <dd className="text-right">
@@ -258,10 +256,10 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 </div>
                 {coffee.status === "sold_out" ? (
                   <ReserveAction
-                    lotId={coffee.lotId}
-                    passportNumber={coffee.lotId}
+                    lotId={coffee.lotNumber}
+                    passportNumber={coffee.passportNumber}
                     href={whatsAppUrl(
-                      coffee.productName,
+                      coffee.coffeeName,
                       `${option.size} — Next Harvest List`
                     )}
                     label="Join Next Harvest List"
@@ -270,11 +268,11 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                   />
                 ) : (
                   <ReserveAction
-                    lotId={coffee.lotId}
-                    passportNumber={coffee.lotId}
+                    lotId={coffee.lotNumber}
+                    passportNumber={coffee.passportNumber}
                     href={
                       option.amazonUrl ||
-                      whatsAppUrl(coffee.productName, option.size)
+                      whatsAppUrl(coffee.coffeeName, option.size)
                     }
                     label={
                       option.amazonUrl
@@ -312,7 +310,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           </p>
           <div className="mt-10 aspect-[16/7] w-full overflow-hidden rounded-lg">
             <iframe
-              title={`Map of ${coffee.origin}`}
+              title={`Map of ${BRAND.origin}`}
               src="https://www.google.com/maps?q=Boquete,Chiriqui,Panama&output=embed"
               className="h-full w-full"
               loading="lazy"
@@ -391,7 +389,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           <div className="mx-auto mt-8 max-w-xl space-y-2 text-sm leading-6 text-charcoal">
             <p>Authentic Infinite Coffee Passport™</p>
             <p>Verified Infinite Panama Coffee Product</p>
-            <p>Connected to Lot {coffee.lotId}</p>
+            <p>Connected to Passport {coffee.passportNumber}</p>
           </div>
           <p className="mx-auto mt-6 max-w-xl text-xs leading-6 text-soft-gray">
             This record is generated and maintained exclusively by Infinite
@@ -444,8 +442,8 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <TrackedLink
-              lotId={coffee.lotId}
-              passportNumber={coffee.lotId}
+              lotId={coffee.lotNumber}
+              passportNumber={coffee.passportNumber}
               action="whatsapp_clicked"
               href={contactUrl}
               className="w-full rounded-full bg-gold px-9 py-[1.1rem] text-sm tracking-wide text-charcoal transition-all duration-300 ease-out hover:bg-gold/90 hover:-translate-y-0.5 sm:w-auto"
@@ -453,8 +451,8 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
               Message on WhatsApp
             </TrackedLink>
             <TrackedLink
-              lotId={coffee.lotId}
-              passportNumber={coffee.lotId}
+              lotId={coffee.lotNumber}
+              passportNumber={coffee.passportNumber}
               action="amazon_clicked"
               href={AMAZON_STORE_URL}
               className="w-full rounded-full border border-cream px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-cream/10 hover:-translate-y-0.5 sm:w-auto"
@@ -490,11 +488,11 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
         <dl className="space-y-2 text-sm text-charcoal">
           <div>
             <dt className="inline font-medium">Passport No.: </dt>
-            <dd className="inline">{formatLotDisplayCompact(coffee)}</dd>
+            <dd className="inline">{formatPassportDisplayCompact(coffee)}</dd>
           </div>
           <div>
             <dt className="inline font-medium">Coffee: </dt>
-            <dd className="inline">{coffee.fullName}</dd>
+            <dd className="inline">{getFullName(coffee)}</dd>
           </div>
           <div>
             <dt className="inline font-medium">Harvest: </dt>
@@ -508,7 +506,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           </div>
           <div>
             <dt className="inline font-medium">Origin: </dt>
-            <dd className="inline">{coffee.origin}</dd>
+            <dd className="inline">{BRAND.origin}</dd>
           </div>
           <div>
             <dt className="inline font-medium">Passport Recorded: </dt>
@@ -517,7 +515,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
         </dl>
 
         <img
-          src={coffee.sizeOptions[0]?.qrCodePath}
+          src={qrPaths.plainSvg}
           alt="Infinite Coffee Passport QR Code"
           width={182}
           height={182}

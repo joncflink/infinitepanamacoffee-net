@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getFeaturedCoffee } from "@/data/coffees";
 
 export const metadata: Metadata = {
   title: "A Letter from the Founder",
@@ -37,6 +38,8 @@ const personSchema = {
 };
 
 export default function FoundersLetterPage() {
+  const featured = getFeaturedCoffee();
+
   return (
     <main className="mx-auto w-full max-w-[700px] px-6 py-24 sm:py-32">
       <script
@@ -198,7 +201,7 @@ export default function FoundersLetterPage() {
 
       <div className="mt-12 text-center">
         <Link
-          href="/passport/IPC-ALT-001#passport"
+          href={`/passport/${featured.passportNumber}#passport`}
           className="inline-block rounded-full bg-forest px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5"
         >
           Explore the Infinite Coffee Passport™

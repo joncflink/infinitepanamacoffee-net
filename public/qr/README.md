@@ -5,35 +5,43 @@
 Every QR in this folder encodes one fixed, bare URL — no query string:
 
 ```
-https://infinitepanamacoffee.com/passport/[lotId]
+https://infinitepanamacoffee.com/passport/[passportNumber]
 ```
 
 For example, `IPC-ALT-001.svg` encodes `https://infinitepanamacoffee.com/passport/IPC-ALT-001`.
 
+`passportNumber` is a coffee's permanent public identifier (see `data/coffees.ts`).
+It is never derived from the coffee's name and, once assigned, is never
+reassigned or reused. New coffees get the next sequential number from
+`getNextPassportNumber()` (e.g. `IPC-000001`, `IPC-000002`, ...).
+
 ## File naming convention
 
-For each lot, `scripts/generate-qr.ts` produces four files:
+For each coffee, `scripts/generate-qr.ts` produces four files, keyed on its
+`passportNumber`:
 
 | File | Meaning |
 |---|---|
-| `[lotId].svg` | Plain — black modules on white, no icon. Maximum-contrast fallback. |
-| `[lotId]-1024.png` | Plain, rasterized. |
-| `[lotId]-branded.svg` | Brand-colored (forest on cream) with the Infinite icon centered. |
-| `[lotId]-branded-1024.png` | Branded, rasterized. |
+| `[passportNumber].svg` | Plain — black modules on white, no icon. Maximum-contrast fallback. |
+| `[passportNumber]-1024.png` | Plain, rasterized. |
+| `[passportNumber]-branded.svg` | Brand-colored (forest on cream) with the Infinite icon centered. |
+| `[passportNumber]-branded-1024.png` | Branded, rasterized. |
 
-### Special case: `IPC-ALT-001` (Altura)
+### Special case: `IPC-ALT-001` (legacy passport)
 
-The Altura QR was designed, verified, and **cleared to print before this
-naming convention existed**. Its already-existing `IPC-ALT-001.svg`,
-`IPC-ALT-001-1024.png`, and `IPC-ALT-001-2048.png` are the **branded**
-design (forest/cream, icon embedded) — they are what's actually on the
-printed label, not a plain/no-icon fallback. `generate-qr.ts` will never
-overwrite them (see "How to regenerate" below), so:
+`IPC-ALT-001` was assigned before the sequential-numbering scheme existed —
+it's a **legacy passport number** (`coffee.legacyPassport: true` in
+`data/coffees.ts`), permanently grandfathered. It is never rewritten, never
+redirected, and never used as a model for new passport numbers. Its already-existing
+`IPC-ALT-001.svg`, `IPC-ALT-001-1024.png`, and `IPC-ALT-001-2048.png` are the
+**branded** design (forest/cream, icon embedded) — they are what's actually
+on the printed label, not a plain/no-icon fallback. `generate-qr.ts` will
+never overwrite them (see "How to regenerate" below), so:
 
 - `IPC-ALT-001.svg` / `-1024.png` / `-2048.png` = the real, live, printed design.
 - `IPC-ALT-001-branded.svg` / `-branded-1024.png` = a fresh regeneration of
   the same branded design, added so the naming convention is consistent
-  across lots. Content-verified (via jsQR) to decode to the same URL.
+  across coffees. Content-verified (via jsQR) to decode to the same URL.
 - A genuine plain/no-icon Altura QR has **not** been generated, because the
   branded version already scans reliably at 20mm/25mm/30mm (verified) and
   there's no reliability problem to work around. If one is ever needed,
@@ -42,8 +50,9 @@ overwrite them (see "How to regenerate" below), so:
   what a "re-download the original QR" action produces for an asset that's
   already on physical inventory.
 
-Any coffee added after this convention was established gets clean,
-genuinely-distinct plain and branded files from a normal script run.
+Any coffee added after this convention was established gets a real
+sequential `passportNumber` and clean, genuinely-distinct plain and branded
+files from a normal script run — no legacy special-casing needed.
 
 ## Why QR codes point to Passport pages, not Amazon
 
@@ -52,13 +61,13 @@ process, and journey information — an Amazon listing can't. The Passport
 page still links out to Amazon/WhatsApp for purchase. Routing through the
 Passport also means the destination can gain features (journey timeline,
 certificate, future account features) without ever needing to reprint a
-label — the QR's job is just to reach the lot's permanent record.
+label — the QR's job is just to reach the coffee's permanent record.
 
 ## How to regenerate
 
 ```
 npx tsx scripts/generate-qr.ts               # fill in anything missing, for every coffee
-npx tsx scripts/generate-qr.ts IPC-ALT-001    # only this lot
+npx tsx scripts/generate-qr.ts IPC-ALT-001    # only this passport number
 npx tsx scripts/generate-qr.ts --force        # overwrite existing files too
 ```
 
@@ -91,20 +100,22 @@ let other label artwork touch or overlap it.
    proof on plain paper — real stock, real ink/toner).
 2. Scan with at least two different phones, using both the native camera
    app and a dedicated QR scanner app.
-3. Confirm the destination matches the lot's Passport URL exactly, with no
-   redirect warning or delay.
+3. Confirm the destination matches the coffee's Passport URL exactly, with
+   no redirect warning or delay.
 4. Test in normal indoor light and in dim light.
 5. Only approve a size for production once every phone/app combination
    succeeds.
 
 `/qr-test` (internal, not linked in navigation, not indexed) renders every
-lot's plain and branded codes with download links for this workflow.
+coffee's plain and branded codes with download links for this workflow.
 
-## Never change a printed QR's destination
+## Passport numbers are permanent — never reassigned, never redirected
 
-Once a label has been printed, its QR code is physically fixed. If a lot's
-canonical URL ever needs to change, the *old* URL must keep working (a
-redirect), because there is no way to reach and update coffee bags already
-on a shelf or in a customer's kitchen. This is also why the QR encodes a
-bare canonical URL with no query string — a query parameter added later
-could never be retrofitted onto an already-printed code either.
+A `passportNumber` is assigned once and never changes for the life of that
+passport. This is the whole point of the sequential scheme: once a label is
+printed, its QR code is physically fixed, so the URL it encodes must keep
+working forever — not via a redirect layer, but because the identifier
+itself was never designed to change in the first place. This is also why
+the QR encodes a bare canonical URL with no query string — a query
+parameter added later could never be retrofitted onto an already-printed
+code either.

@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import Mark from "@/components/Mark";
+import { BRAND, getFeaturedCoffee } from "@/data/coffees";
 
 export default function Hero() {
+  const featured = getFeaturedCoffee();
+
   return (
     <section className="relative flex min-h-[74vh] w-full items-center justify-center overflow-hidden">
       <Image
@@ -28,9 +31,9 @@ export default function Hero() {
           100% BOQUETE, PANAMA
         </p>
         <h1 className="mt-2 font-heading leading-tight">
-          <span className="block text-4xl sm:text-6xl">Infinite Select™</span>
+          <span className="block text-4xl sm:text-6xl">{BRAND.collection}</span>
           <span className="block text-[1.65rem] tracking-wide sm:text-[2.75rem]">
-            Altura
+            {featured.coffeeName}
           </span>
         </h1>
         <p className="mt-3 text-lg text-cream">
@@ -44,13 +47,13 @@ export default function Hero() {
 
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
           <Link
-            href="/passport/IPC-ALT-001#reserve"
+            href={`/passport/${featured.passportNumber}#reserve`}
             className="rounded-full bg-gold px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-gold/90 hover:-translate-y-0.5"
           >
             Reserve Your Allocation
           </Link>
           <Link
-            href="/passport/IPC-ALT-001#passport"
+            href={`/passport/${featured.passportNumber}#passport`}
             className="rounded-full border border-cream/80 px-9 py-4 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:border-cream hover:bg-cream/10"
           >
             Explore Infinite Coffee Passport™

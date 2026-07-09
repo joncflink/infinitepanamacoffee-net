@@ -2,6 +2,14 @@ export const WHATSAPP_NUMBER = "12072335784";
 export const AMAZON_STORE_URL =
   "https://www.amazon.com/sp?ie=UTF8&seller=A3A3ULRCNZYQWC&isAmazonFulfilled=1&asin=0702052329&ref_=olp_merch_name_2";
 
+/** Fixed brand-level facts, true for every coffee this brand will ever sell. Never per-record — do not add these to the Coffee type. */
+export const BRAND = {
+  name: "Infinite Panama Coffee™",
+  collection: "Infinite Select™",
+  productType: "Single-Origin Green Coffee Beans",
+  origin: "Boquete, Chiriquí, Panama",
+} as const;
+
 export function whatsAppUrl(coffeeName: string, size?: string): string {
   const suffix = size ? ` (${size})` : "";
   const text = `Hi Jon, I am interested in Infinite Panama Coffee ${coffeeName}${suffix}.`;
@@ -20,31 +28,55 @@ export const STATUS_LABELS: Record<CoffeeStatus, string> = {
 export type CoffeeSizeOption = {
   size: string;
   netWeight: string;
+  /** Assigned independently per size/listing — never derived from the passport or lot number. */
   sku: string;
   /** Left empty until a per-size Amazon listing exists; falls back to WhatsApp reorder. */
   amazonUrl: string;
-  qrCodePath: string;
 };
 
 /** "Pending Producer Confirmation" placeholders are intentional — do not fill in specifics without a real source. */
 const TBC = "Pending Producer Confirmation";
 
 export type Coffee = {
-  lotId: string;
+  /** Internal stable identifier. Never shown publicly, never used in a URL. */
+  id: string;
+  /**
+   * Public, permanent passport identifier — the URL/QR/certificate key.
+   * Once assigned it is never reassigned or reused. New coffees get the
+   * next sequential number from getNextPassportNumber(), e.g. "IPC-000001".
+   */
+  passportNumber: string;
+  /**
+   * True only for passports assigned before the sequential-numbering
+   * scheme existed (currently just Altura's "IPC-ALT-001"). Legacy
+   * passport numbers are permanently grandfathered: never rewritten,
+   * never redirected, and never used as a model for new numbers.
+   */
+  legacyPassport?: boolean;
   slug: string;
-  collection: string;
-  productName: string;
-  fullName: string;
-  origin: string;
-  productType: string;
+  /** The actual coffee's name, e.g. "Altura". Fully dynamic — never hardcode a coffee name in a template. */
+  coffeeName: string;
+  /**
+   * Producer/harvest-batch reference. Distinct from passportNumber: this
+   * reflects internal lot/batch bookkeeping and, unlike the passport
+   * number, is not a routing key and isn't guaranteed to be unique or permanent.
+   */
+  lotNumber: string;
   process: string;
   harvest: string;
   variety: string;
   elevation: string;
-  /** Only set once the producer/exporter has approved being named publicly. */
+  /** Only set once the producer/farm/exporter has approved being named publicly. */
   producer?: string;
+  farm?: string;
   exporter?: string;
+  packedOn?: string;
+  bestBy?: string;
+  /** Internal stock count — not rendered on the public passport page. */
+  inventory?: number;
   status: CoffeeStatus;
+  /** Selects which coffee the homepage hero/contact section spotlights. Exactly one coffee should be featured; falls back to the first entry if none is. */
+  featured?: boolean;
   sizeOptions: CoffeeSizeOption[];
   story: string;
   storage: string;
@@ -57,40 +89,22 @@ export type Coffee = {
 
 export const coffees: Coffee[] = [
   {
-    lotId: "IPC-ALT-001",
+    id: "51edad89-a654-4178-94b2-757d4157cd79",
+    passportNumber: "IPC-ALT-001",
+    legacyPassport: true,
     slug: "altura",
-    collection: "Infinite Select™",
-    productName: "Altura",
-    fullName: "Infinite Select™ Altura",
-    origin: "Boquete, Chiriquí, Panama",
-    productType: "Specialty Green Coffee Beans",
+    coffeeName: "Altura",
+    lotNumber: "IPC-ALT-001",
     process: "Washed",
     harvest: "2025–2026",
     variety: TBC,
     elevation: TBC,
     status: "reserve",
+    featured: true,
     sizeOptions: [
-      {
-        size: "8 oz",
-        netWeight: "227 g",
-        sku: "IPC-ALT-8OZ-001",
-        amazonUrl: "",
-        qrCodePath: "/qr/IPC-ALT-001.svg",
-      },
-      {
-        size: "1 lb",
-        netWeight: "454 g",
-        sku: "IPC-ALT-1LB-001",
-        amazonUrl: "",
-        qrCodePath: "/qr/IPC-ALT-001.svg",
-      },
-      {
-        size: "2 lb",
-        netWeight: "907 g",
-        sku: "IPC-ALT-2LB-001",
-        amazonUrl: "",
-        qrCodePath: "/qr/IPC-ALT-001.svg",
-      },
+      { size: "8 oz", netWeight: "227 g", sku: "IPC-ALT-8OZ-001", amazonUrl: "" },
+      { size: "1 lb", netWeight: "454 g", sku: "IPC-ALT-1LB-001", amazonUrl: "" },
+      { size: "2 lb", netWeight: "907 g", sku: "IPC-ALT-2LB-001", amazonUrl: "" },
     ],
     story:
       "Altura is the first coffee in the Infinite Select™ collection — a washed-process lot grown in the highlands of Boquete, Chiriquí. It was chosen to open the collection because it represents what we value most: clean processing, honest origin, and the patient work of one of Panama's most respected growing regions. Producer and exporter details will be published here as they are confirmed.",
@@ -105,6 +119,15 @@ export const coffees: Coffee[] = [
   },
 ];
 
+export function getFullName(coffee: Coffee): string {
+  return `${BRAND.collection} ${coffee.coffeeName}`;
+}
+
+/** The coffee the homepage hero/contact section spotlights. */
+export function getFeaturedCoffee(): Coffee {
+  return coffees.find((c) => c.featured) ?? coffees[0];
+}
+
 export function getCoffee(slug: string): Coffee | undefined {
   return coffees.find((c) => c.slug === slug);
 }
@@ -113,25 +136,44 @@ export function getAllCoffeeSlugs(): string[] {
   return coffees.map((c) => c.slug);
 }
 
-export function getCoffeeByLot(lotId: string): Coffee | undefined {
-  const normalized = lotId.toUpperCase();
-  return coffees.find((c) => c.lotId === normalized);
+export function getCoffeeByPassportNumber(passportNumber: string): Coffee | undefined {
+  const normalized = passportNumber.toUpperCase();
+  return coffees.find((c) => c.passportNumber === normalized);
 }
 
-export function getAllLotIds(): string[] {
-  return coffees.map((c) => c.lotId);
+export function getAllPassportNumbers(): string[] {
+  return coffees.map((c) => c.passportNumber);
 }
 
-/** Collectible display format for a lot number, e.g. "IPC-ALT-001" -> "IPC • 2025 • ALT • 001". The raw lotId stays the machine-readable ID used in URLs, QR codes, and WhatsApp messages. */
-export function formatLotDisplay(coffee: Coffee): string {
-  const parts = coffee.lotId.split("-");
-  const year = coffee.harvest.match(/\d{4}/)?.[0];
-  return [parts[0], year, parts[1], parts[2]].filter(Boolean).join(" • ");
+/**
+ * Next sequential public passport number for a new coffee, e.g. "IPC-000001".
+ * Legacy passports (like "IPC-ALT-001") never participate in the sequence.
+ */
+export function getNextPassportNumber(): string {
+  const sequential = coffees
+    .filter((c) => !c.legacyPassport)
+    .map((c) => parseInt(c.passportNumber.replace(/^IPC-/, ""), 10))
+    .filter((n) => !Number.isNaN(n));
+  const next = sequential.length ? Math.max(...sequential) + 1 : 1;
+  return `IPC-${String(next).padStart(6, "0")}`;
 }
 
-/** Compact serial-number format for the certificate, e.g. "IPC-ALT-001" -> "IPC•2025•ALT•001" (no spaces around separators). */
-export function formatLotDisplayCompact(coffee: Coffee): string {
-  const parts = coffee.lotId.split("-");
-  const year = coffee.harvest.match(/\d{4}/)?.[0];
-  return [parts[0], year, parts[1], parts[2]].filter(Boolean).join("•");
+/** QR file paths for a coffee, derived from its permanent passport number. */
+export function getQrPaths(coffee: Coffee) {
+  return {
+    plainSvg: `/qr/${coffee.passportNumber}.svg`,
+    plainPng: `/qr/${coffee.passportNumber}-1024.png`,
+    brandedSvg: `/qr/${coffee.passportNumber}-branded.svg`,
+    brandedPng: `/qr/${coffee.passportNumber}-branded-1024.png`,
+  };
+}
+
+/** Collectible display format for a passport number, e.g. "IPC-ALT-001" -> "IPC • ALT • 001", "IPC-000001" -> "IPC • 000001". */
+export function formatPassportDisplay(coffee: Coffee): string {
+  return coffee.passportNumber.split("-").join(" • ");
+}
+
+/** Compact serial-number format for the certificate, e.g. "IPC-ALT-001" -> "IPC•ALT•001". */
+export function formatPassportDisplayCompact(coffee: Coffee): string {
+  return coffee.passportNumber.split("-").join("•");
 }

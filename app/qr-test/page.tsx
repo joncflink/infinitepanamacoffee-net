@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { coffees } from "@/data/coffees";
+import { coffees, getFullName } from "@/data/coffees";
 
 export const metadata: Metadata = {
   title: "QR Test",
@@ -17,7 +17,7 @@ export default function QrTestPage() {
       </h1>
       <p className="mt-4 max-w-2xl text-sm leading-6 text-charcoal">
         Not linked from site navigation, not indexed by search engines. Use
-        this page to visually check and physically test-scan each lot&rsquo;s
+        this page to visually check and physically test-scan each coffee&rsquo;s
         QR codes before sending anything to a printer.
       </p>
 
@@ -31,7 +31,7 @@ export default function QrTestPage() {
       </div>
 
       <div className="mt-4 rounded-lg border border-gold/25 px-5 py-4 text-xs leading-6 text-soft-gray">
-        For lots whose labels are already printed, the un-suffixed
+        For passports whose labels are already printed, the un-suffixed
         (&ldquo;plain&rdquo;) file may be identical to the live printed design
         rather than a fresh, icon-free fallback — see{" "}
         <code>/public/qr/README.md</code> for the exact story on each file.
@@ -39,21 +39,21 @@ export default function QrTestPage() {
 
       <div className="mt-12 space-y-16">
         {coffees.map((coffee) => {
-          const passportUrl = `https://infinitepanamacoffee.com/passport/${coffee.lotId}`;
-          const plainSvg = `/qr/${coffee.lotId}.svg`;
-          const plainPng = `/qr/${coffee.lotId}-1024.png`;
-          const brandedSvg = `/qr/${coffee.lotId}-branded.svg`;
-          const brandedPng = `/qr/${coffee.lotId}-branded-1024.png`;
+          const passportUrl = `https://infinitepanamacoffee.com/passport/${coffee.passportNumber}`;
+          const plainSvg = `/qr/${coffee.passportNumber}.svg`;
+          const plainPng = `/qr/${coffee.passportNumber}-1024.png`;
+          const brandedSvg = `/qr/${coffee.passportNumber}-branded.svg`;
+          const brandedPng = `/qr/${coffee.passportNumber}-branded-1024.png`;
 
           return (
-            <section key={coffee.lotId} className="border-t border-gold/25 pt-10">
+            <section key={coffee.passportNumber} className="border-t border-gold/25 pt-10">
               <h2 className="font-heading text-lg text-forest">
-                {coffee.fullName}
+                {getFullName(coffee)}
               </h2>
               <dl className="mt-2 space-y-1 text-sm">
                 <div>
-                  <dt className="inline text-soft-gray">Lot ID: </dt>
-                  <dd className="inline font-medium">{coffee.lotId}</dd>
+                  <dt className="inline text-soft-gray">Passport No.: </dt>
+                  <dd className="inline font-medium">{coffee.passportNumber}</dd>
                 </div>
                 <div>
                   <dt className="inline text-soft-gray">Passport URL: </dt>
@@ -76,7 +76,7 @@ export default function QrTestPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={plainSvg}
-                    alt={`Plain QR code for ${coffee.lotId}`}
+                    alt={`Plain QR code for ${coffee.passportNumber}`}
                     width={220}
                     height={220}
                     className="mt-3 h-[220px] w-[220px] border border-gold/25"
@@ -96,7 +96,7 @@ export default function QrTestPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={brandedSvg}
-                    alt={`Branded QR code for ${coffee.lotId}`}
+                    alt={`Branded QR code for ${coffee.passportNumber}`}
                     width={220}
                     height={220}
                     className="mt-3 h-[220px] w-[220px] border border-gold/25"

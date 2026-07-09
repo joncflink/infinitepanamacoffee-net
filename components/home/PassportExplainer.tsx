@@ -1,8 +1,11 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
+import { getFeaturedCoffee } from "@/data/coffees";
 import { PASSPORT_FIELDS } from "@/data/site";
 
 export default function PassportExplainer() {
+  const featured = getFeaturedCoffee();
+
   return (
     <section className="w-full bg-forest px-6 py-28 text-cream sm:py-36">
       <ScrollReveal className="mx-auto max-w-2xl text-center">
@@ -25,7 +28,7 @@ export default function PassportExplainer() {
         </ul>
 
         <Link
-          href="/passport/IPC-ALT-001#passport"
+          href={`/passport/${featured.passportNumber}#passport`}
           className="mt-12 inline-block rounded-full border border-gold px-9 py-[1.1rem] text-sm tracking-wide text-gold transition-all duration-300 ease-out hover:bg-gold/10 hover:-translate-y-0.5"
         >
           Explore Infinite Coffee Passport™

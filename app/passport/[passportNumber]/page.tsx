@@ -1,26 +1,31 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAllLotIds, getCoffeeByLot } from "@/data/coffees";
+import {
+  BRAND,
+  getAllPassportNumbers,
+  getCoffeeByPassportNumber,
+  getFullName,
+} from "@/data/coffees";
 import CoffeePage from "@/components/CoffeePage";
 
 export function generateStaticParams() {
-  return getAllLotIds().map((lotId) => ({ lotId }));
+  return getAllPassportNumbers().map((passportNumber) => ({ passportNumber }));
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ lotId: string }>;
+  params: Promise<{ passportNumber: string }>;
 }): Promise<Metadata> {
-  const { lotId } = await params;
-  const coffee = getCoffeeByLot(lotId);
+  const { passportNumber } = await params;
+  const coffee = getCoffeeByPassportNumber(passportNumber);
   if (!coffee) return {};
 
   return {
     title: coffee.metaTitle,
     description: coffee.metaDescription,
     alternates: {
-      canonical: `/passport/${coffee.lotId}`,
+      canonical: `/passport/${coffee.passportNumber}`,
     },
     openGraph: {
       title: coffee.metaTitle,
@@ -32,25 +37,25 @@ export async function generateMetadata({
 export default async function Page({
   params,
 }: {
-  params: Promise<{ lotId: string }>;
+  params: Promise<{ passportNumber: string }>;
 }) {
-  const { lotId } = await params;
-  const coffee = getCoffeeByLot(lotId);
+  const { passportNumber } = await params;
+  const coffee = getCoffeeByPassportNumber(passportNumber);
   if (!coffee) notFound();
 
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: coffee.fullName,
+    name: getFullName(coffee),
     description: coffee.metaDescription,
-    sku: coffee.lotId,
-    category: coffee.productType,
+    sku: coffee.passportNumber,
+    category: BRAND.productType,
     brand: {
       "@type": "Brand",
       name: "Infinite Panama Coffee",
     },
     additionalProperty: [
-      { "@type": "PropertyValue", name: "Origin", value: coffee.origin },
+      { "@type": "PropertyValue", name: "Origin", value: BRAND.origin },
       { "@type": "PropertyValue", name: "Process", value: coffee.process },
       { "@type": "PropertyValue", name: "Harvest", value: coffee.harvest },
     ],
@@ -63,7 +68,9 @@ export default async function Page({
           : coffee.status === "reserve"
             ? "https://schema.org/PreOrder"
             : "https://schema.org/InStock",
-      url: option.amazonUrl || `https://infinitepanamacoffee.com/passport/${coffee.lotId}`,
+      url:
+        option.amazonUrl ||
+        `https://infinitepanamacoffee.com/passport/${coffee.passportNumber}`,
     })),
   };
 
