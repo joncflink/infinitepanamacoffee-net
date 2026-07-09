@@ -10,6 +10,8 @@ import {
 import { OUR_PROMISE } from "@/data/site";
 import ReserveAction from "@/components/ReserveAction";
 import PrintCertificateButton from "@/components/PrintCertificateButton";
+import TrackedAmazonLink from "@/components/TrackedAmazonLink";
+import QrScanLogger from "@/components/QrScanLogger";
 
 function Divider() {
   return <hr className="mx-auto my-4 w-24 border-t border-gold/60" />;
@@ -74,6 +76,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
 
   return (
     <>
+      <QrScanLogger lotId={coffee.lotId} />
       <main className="flex flex-1 flex-col items-center print:hidden">
         {/* Hero */}
         <section className="w-full bg-cream px-6 py-20 text-center text-forest sm:py-28">
@@ -260,6 +263,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                       `${option.size} — Next Harvest List`
                     )}
                     label="Join Next Harvest List"
+                    action="join_next_harvest_clicked"
                     className="w-full rounded-full bg-forest px-7 py-3.5 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"
                   />
                 ) : (
@@ -274,6 +278,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                         ? "Reorder This Coffee"
                         : "Reserve This Allocation"
                     }
+                    action={option.amazonUrl ? "reorder_clicked" : "reserve_clicked"}
                     className="w-full rounded-full bg-forest px-7 py-3.5 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-forest/90 hover:-translate-y-0.5 sm:w-auto"
                   />
                 )}
@@ -443,14 +448,13 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
             >
               Message on WhatsApp
             </a>
-            <a
+            <TrackedAmazonLink
+              lotId={coffee.lotId}
               href={AMAZON_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
               className="w-full rounded-full border border-cream px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-cream/10 hover:-translate-y-0.5 sm:w-auto"
             >
               Visit Amazon Store
-            </a>
+            </TrackedAmazonLink>
           </div>
         </section>
       </main>
