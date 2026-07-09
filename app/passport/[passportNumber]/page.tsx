@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { notFound } from "next/navigation";
 import {
   BRAND,
@@ -43,6 +45,13 @@ export default async function Page({
   const coffee = getCoffeeByPassportNumber(passportNumber);
   if (!coffee) notFound();
 
+  // The print-only certificate shouldn't ever try to render a QR image
+  // that doesn't exist yet — check once here rather than in the client
+  // component, same pattern as app/labels/[passportNumber]/back/page.tsx.
+  const qrExists = existsSync(
+    path.join(process.cwd(), "public", "qr", `${coffee.passportNumber}.svg`)
+  );
+
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -84,7 +93,7 @@ export default async function Page({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
-      <CoffeePage coffee={coffee} />
+      <CoffeePage coffee={coffee} qrExists={qrExists} />
     </>
   );
 }

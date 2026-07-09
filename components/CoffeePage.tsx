@@ -66,7 +66,13 @@ const journeyStages = (coffee: Coffee) => [
   { label: "Import", detail: undefined, confirmed: false },
 ];
 
-export default function CoffeePage({ coffee }: { coffee: Coffee }) {
+export default function CoffeePage({
+  coffee,
+  qrExists = true,
+}: {
+  coffee: Coffee;
+  qrExists?: boolean;
+}) {
   const originParts = BRAND.origin.split(", ");
   const originShort = `${originParts[0]}, ${originParts[originParts.length - 1]}`;
   const contactUrl = whatsAppUrl(coffee.coffeeName);
@@ -466,8 +472,9 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
         </section>
       </main>
 
-      {/* Certificate of Provenance (print only) */}
-      <div className="relative hidden print:flex print:min-h-screen print:w-full print:flex-col print:items-center print:justify-center print:gap-7 print:p-16 print:text-center">
+      {/* Certificate of Provenance (print only) — sized to its own content, not
+          the viewport, so it reliably fits on one printed page. */}
+      <div className="relative hidden print:flex print:h-auto print:min-h-0 print:w-full print:flex-col print:items-center print:gap-5 print:p-10 print:text-center">
         <img
           src="/images/infinite-panama-coffee-logo.png"
           alt="Infinite Panama Coffee"
@@ -497,10 +504,12 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
             <dt className="inline font-medium">Coffee: </dt>
             <dd className="inline">{getFullName(coffee)}</dd>
           </div>
-          <div>
-            <dt className="inline font-medium">Harvest: </dt>
-            <dd className="inline">{coffee.harvest}</dd>
-          </div>
+          {coffee.harvest && (
+            <div>
+              <dt className="inline font-medium">Harvest: </dt>
+              <dd className="inline">{coffee.harvest}</dd>
+            </div>
+          )}
           <div>
             <dt className="inline font-medium">Producer: </dt>
             <dd className="inline">
@@ -517,12 +526,18 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           </div>
         </dl>
 
-        <img
-          src={qrPaths.plainSvg}
-          alt="Infinite Coffee Passport QR Code"
-          width={182}
-          height={182}
-        />
+        {qrExists ? (
+          <img
+            src={qrPaths.plainSvg}
+            alt="Infinite Coffee Passport QR Code"
+            width={182}
+            height={182}
+          />
+        ) : (
+          <div className="flex h-[182px] w-[182px] flex-col items-center justify-center rounded-md border border-dashed border-gold/40 px-4 text-center text-xs italic text-soft-gray">
+            QR Pending Final Lot Selection
+          </div>
+        )}
         <p className="max-w-[220px] text-xs leading-5 text-soft-gray">
           Scan to verify this passport in the Infinite Coffee Passport™
           Registry.
