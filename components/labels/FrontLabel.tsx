@@ -16,9 +16,14 @@ function Divider() {
   );
 }
 
-/** True for a sizeOption that's itself a placeholder (no real SKU/weight assigned yet). */
+/**
+ * True only when the weight itself hasn't been determined yet. Deliberately
+ * ignores sku — a record can have a real net weight worth showing on the
+ * label while still having no SKU (e.g. a development sample never
+ * intended to be sold), and those are different kinds of "not ready."
+ */
 function isPlaceholderSize(size: ReturnType<typeof getSizeOption>): boolean {
-  return size.sku === "" || size.netWeight === "TBD";
+  return size.netWeight === "TBD";
 }
 
 export default function FrontLabel({ coffee }: { coffee: Coffee }) {

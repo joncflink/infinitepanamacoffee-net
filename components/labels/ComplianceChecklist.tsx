@@ -9,7 +9,7 @@ import { LABEL_COLORS } from "./constants";
  */
 function getChecklist(coffee: Coffee): Array<{ label: string; satisfied: boolean }> {
   const size = getSizeOption(coffee, "8 oz");
-  const hasRealNetWeight = size.netWeight !== "TBD" && size.sku !== "";
+  const hasRealNetWeight = size.netWeight !== "TBD";
 
   return [
     { label: "Brand name present", satisfied: Boolean(BRAND.name) },

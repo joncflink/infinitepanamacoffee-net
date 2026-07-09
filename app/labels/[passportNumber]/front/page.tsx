@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllPassportNumbers, getCoffeeByPassportNumber, getFullName } from "@/data/coffees";
+import { getAllLabelPassportNumbers, getLabelCoffeeByPassportNumber, getFullName } from "@/data/coffees";
 import FrontLabel from "@/components/labels/FrontLabel";
 
 export function generateStaticParams() {
-  return getAllPassportNumbers().map((passportNumber) => ({ passportNumber }));
+  return getAllLabelPassportNumbers().map((passportNumber) => ({ passportNumber }));
 }
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function FrontLabelPage({
   params: Promise<{ passportNumber: string }>;
 }) {
   const { passportNumber } = await params;
-  const coffee = getCoffeeByPassportNumber(passportNumber);
+  const coffee = getLabelCoffeeByPassportNumber(passportNumber);
   if (!coffee) notFound();
 
   return (

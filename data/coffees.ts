@@ -21,7 +21,8 @@ export type CoffeeStatus =
   | "reserve"
   | "reserve_collection"
   | "sold_out"
-  | "archived";
+  | "archived"
+  | "sample";
 
 export const STATUS_LABELS: Record<CoffeeStatus, string> = {
   available: "Available",
@@ -29,6 +30,7 @@ export const STATUS_LABELS: Record<CoffeeStatus, string> = {
   reserve_collection: "Reserve Collection",
   sold_out: "Currently Resting",
   archived: "Archived",
+  sample: "Development Sample",
 };
 
 export type CoffeeSizeOption = {
@@ -84,6 +86,8 @@ export type Coffee = {
   /** Internal stock count — not rendered on the public passport page. */
   inventory?: number;
   status: CoffeeStatus;
+  /** Purchasability gate, distinct from `status`. Undefined means available (true) — only set explicitly false for records (e.g. development samples) that must never appear purchasable anywhere. */
+  available?: boolean;
   /** Selects which coffee the homepage hero/contact section spotlights. Exactly one coffee should be featured; falls back to the first entry if none is. */
   featured?: boolean;
   sizeOptions: CoffeeSizeOption[];
@@ -153,6 +157,102 @@ export const coffees: Coffee[] = [
   },
 ];
 
+/**
+ * Development/sample fixtures used only to test the label system
+ * (components/labels/, app/labels/). These are real Casa Ruiz lot names
+ * pulled from actual supplier price lists, but the records themselves are
+ * NOT commitments that any of these coffees will be available for sale —
+ * status "sample" and available: false mark that explicitly. Deliberately
+ * kept out of the `coffees` array: they must never be reachable via the
+ * public /passport/[passportNumber] route, the /coffee/[slug] redirect,
+ * the homepage featured-coffee lookup, or any other public-facing helper
+ * that iterates `coffees`. Their passportNumbers use a "SAMPLE-" prefix
+ * (not "IPC-") so they can never be confused with a real, permanent
+ * passport number and never collide with the real sequential scheme.
+ */
+export const sampleCoffees: Coffee[] = [
+  {
+    id: "43cc1927-a8a5-4b12-acfd-ae8d29793eb3",
+    passportNumber: "SAMPLE-001",
+    slug: "boquete-shb-arabica-washed-altura",
+    coffeeName: "Boquete SHB Arabica Washed Altura",
+    process: "Washed",
+    status: "sample",
+    available: false,
+    sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
+    story:
+      "This is a development sample record for Boquete SHB Arabica Washed Altura, used to test the Infinite Coffee Passport™ label system. It is not a confirmed product and is not available for sale.",
+    storage:
+      "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
+    tastingNotes: [],
+    photos: [],
+    createdAt: "2026-07-09",
+    metaTitle: "Infinite Select Boquete SHB Arabica Washed Altura (Sample)",
+    metaDescription:
+      "Development sample record for Boquete SHB Arabica Washed Altura, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
+  },
+  {
+    id: "5e0d1fef-1988-4b65-bc16-521e4a510763",
+    passportNumber: "SAMPLE-002",
+    slug: "la-jungla-washed",
+    coffeeName: "La Jungla Washed",
+    process: "Washed",
+    status: "sample",
+    available: false,
+    sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
+    story:
+      "This is a development sample record for La Jungla Washed, used to test the Infinite Coffee Passport™ label system. It is not a confirmed product and is not available for sale.",
+    storage:
+      "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
+    tastingNotes: [],
+    photos: [],
+    createdAt: "2026-07-09",
+    metaTitle: "Infinite Select La Jungla Washed (Sample)",
+    metaDescription:
+      "Development sample record for La Jungla Washed, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
+  },
+  {
+    id: "24bdc281-1a84-4479-a1a8-892e9e51a870",
+    passportNumber: "SAMPLE-003",
+    slug: "panama-shb-washed-premium",
+    coffeeName: "Panama SHB Washed Premium",
+    process: "Washed",
+    status: "sample",
+    available: false,
+    sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
+    story:
+      "This is a development sample record for Panama SHB Washed Premium, used to test the Infinite Coffee Passport™ label system. It is not a confirmed product and is not available for sale.",
+    storage:
+      "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
+    tastingNotes: [],
+    photos: [],
+    createdAt: "2026-07-09",
+    metaTitle: "Infinite Select Panama SHB Washed Premium (Sample)",
+    metaDescription:
+      "Development sample record for Panama SHB Washed Premium, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
+  },
+  {
+    id: "8e7bcfc0-d96a-44cf-b69d-1928c53610d2",
+    passportNumber: "SAMPLE-004",
+    slug: "vanguardia-natural-geisha",
+    coffeeName: "Vanguardia Natural Geisha",
+    process: "Natural",
+    status: "sample",
+    available: false,
+    sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
+    story:
+      "This is a development sample record for Vanguardia Natural Geisha, used to test the Infinite Coffee Passport™ label system. It is not a confirmed product and is not available for sale.",
+    storage:
+      "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
+    tastingNotes: [],
+    photos: [],
+    createdAt: "2026-07-09",
+    metaTitle: "Infinite Select Vanguardia Natural Geisha (Sample)",
+    metaDescription:
+      "Development sample record for Vanguardia Natural Geisha, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
+  },
+];
+
 export function getFullName(coffee: Coffee): string {
   return `${BRAND.collection} ${coffee.coffeeName}`;
 }
@@ -213,6 +313,24 @@ export function getSizeOption(coffee: Coffee, size = "8 oz"): CoffeeSizeOption {
     coffee.sizeOptions.find((option) => option.size.trim().toLowerCase() === normalized) ??
     coffee.sizeOptions[0]
   );
+}
+
+/**
+ * Every coffee the /labels preview system can show: the real public
+ * catalog plus development samples. Never used by public-facing routes —
+ * only app/labels/** should call these.
+ */
+export function getAllLabelCoffees(): Coffee[] {
+  return [...coffees, ...sampleCoffees];
+}
+
+export function getLabelCoffeeByPassportNumber(passportNumber: string): Coffee | undefined {
+  const normalized = passportNumber.toUpperCase();
+  return getAllLabelCoffees().find((c) => c.passportNumber === normalized);
+}
+
+export function getAllLabelPassportNumbers(): string[] {
+  return getAllLabelCoffees().map((c) => c.passportNumber);
 }
 
 /** Collectible display format for a passport number, e.g. "IPC-ALT-001" -> "IPC • ALT • 001", "IPC-000001" -> "IPC • 000001". */

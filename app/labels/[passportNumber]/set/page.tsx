@@ -3,13 +3,13 @@ import Link from "next/link";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { notFound } from "next/navigation";
-import { getAllPassportNumbers, getCoffeeByPassportNumber, getFullName, getQrPaths } from "@/data/coffees";
+import { getAllLabelPassportNumbers, getLabelCoffeeByPassportNumber, getFullName, getQrPaths } from "@/data/coffees";
 import FrontLabel from "@/components/labels/FrontLabel";
 import BackLabel from "@/components/labels/BackLabel";
 import ComplianceChecklist from "@/components/labels/ComplianceChecklist";
 
 export function generateStaticParams() {
-  return getAllPassportNumbers().map((passportNumber) => ({ passportNumber }));
+  return getAllLabelPassportNumbers().map((passportNumber) => ({ passportNumber }));
 }
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default async function LabelSetPage({
   params: Promise<{ passportNumber: string }>;
 }) {
   const { passportNumber } = await params;
-  const coffee = getCoffeeByPassportNumber(passportNumber);
+  const coffee = getLabelCoffeeByPassportNumber(passportNumber);
   if (!coffee) notFound();
 
   const qrPaths = getQrPaths(coffee);
