@@ -6,12 +6,14 @@ import { logReorderEvent, type ReorderAction } from "@/lib/supabase/track";
 
 export default function ReserveAction({
   lotId,
+  passportNumber,
   href,
   label,
   className,
   action,
 }: {
   lotId: string;
+  passportNumber: string;
   href: string;
   label: string;
   className: string;
@@ -29,7 +31,7 @@ export default function ReserveAction({
         rel="noopener noreferrer"
         onClick={() => {
           setClicked(true);
-          logReorderEvent({ lotId, action, destinationUrl: href });
+          logReorderEvent({ lotId, passportNumber, action, destinationUrl: href });
         }}
         className={className}
       >

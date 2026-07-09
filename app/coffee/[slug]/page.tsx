@@ -14,5 +14,5 @@ export default async function Page({
   const coffee = getCoffee(slug);
   if (!coffee) notFound();
 
-  permanentRedirect(`/passport/${coffee.lotId}`);
+  permanentRedirect(`/passport/${coffee.lotId}?source=legacy_redirect`);
 }

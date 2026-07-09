@@ -1,15 +1,19 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { logReorderEvent } from "@/lib/supabase/track";
+import { logReorderEvent, type ReorderAction } from "@/lib/supabase/track";
 
-export default function TrackedAmazonLink({
+export default function TrackedLink({
   lotId,
+  passportNumber,
+  action,
   href,
   className,
   children,
 }: {
   lotId: string;
+  passportNumber: string;
+  action: ReorderAction;
   href: string;
   className: string;
   children: ReactNode;
@@ -20,7 +24,7 @@ export default function TrackedAmazonLink({
       target="_blank"
       rel="noopener noreferrer"
       onClick={() =>
-        logReorderEvent({ lotId, action: "amazon_clicked", destinationUrl: href })
+        logReorderEvent({ lotId, passportNumber, action, destinationUrl: href })
       }
       className={className}
     >

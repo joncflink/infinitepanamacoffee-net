@@ -10,7 +10,7 @@ import {
 import { OUR_PROMISE } from "@/data/site";
 import ReserveAction from "@/components/ReserveAction";
 import PrintCertificateButton from "@/components/PrintCertificateButton";
-import TrackedAmazonLink from "@/components/TrackedAmazonLink";
+import TrackedLink from "@/components/TrackedLink";
 import QrScanLogger from "@/components/QrScanLogger";
 
 function Divider() {
@@ -76,7 +76,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
 
   return (
     <>
-      <QrScanLogger lotId={coffee.lotId} />
+      <QrScanLogger lotId={coffee.lotId} passportNumber={coffee.lotId} />
       <main className="flex flex-1 flex-col items-center print:hidden">
         {/* Hero */}
         <section className="w-full bg-cream px-6 py-20 text-center text-forest sm:py-28">
@@ -113,14 +113,15 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
               >
                 Reserve Your Allocation
               </a>
-              <a
+              <TrackedLink
+                lotId={coffee.lotId}
+                passportNumber={coffee.lotId}
+                action="whatsapp_clicked"
                 href={contactUrl}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="py-1 text-sm text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
               >
                 Contact on WhatsApp
-              </a>
+              </TrackedLink>
             </div>
           </div>
         </section>
@@ -258,6 +259,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 {coffee.status === "sold_out" ? (
                   <ReserveAction
                     lotId={coffee.lotId}
+                    passportNumber={coffee.lotId}
                     href={whatsAppUrl(
                       coffee.productName,
                       `${option.size} — Next Harvest List`
@@ -269,6 +271,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 ) : (
                   <ReserveAction
                     lotId={coffee.lotId}
+                    passportNumber={coffee.lotId}
                     href={
                       option.amazonUrl ||
                       whatsAppUrl(coffee.productName, option.size)
@@ -440,21 +443,24 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
             For availability, pre-orders, or questions, contact us directly.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
+            <TrackedLink
+              lotId={coffee.lotId}
+              passportNumber={coffee.lotId}
+              action="whatsapp_clicked"
               href={contactUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               className="w-full rounded-full bg-gold px-9 py-[1.1rem] text-sm tracking-wide text-charcoal transition-all duration-300 ease-out hover:bg-gold/90 hover:-translate-y-0.5 sm:w-auto"
             >
               Message on WhatsApp
-            </a>
-            <TrackedAmazonLink
+            </TrackedLink>
+            <TrackedLink
               lotId={coffee.lotId}
+              passportNumber={coffee.lotId}
+              action="amazon_clicked"
               href={AMAZON_STORE_URL}
               className="w-full rounded-full border border-cream px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-cream/10 hover:-translate-y-0.5 sm:w-auto"
             >
               Visit Amazon Store
-            </TrackedAmazonLink>
+            </TrackedLink>
           </div>
         </section>
       </main>
