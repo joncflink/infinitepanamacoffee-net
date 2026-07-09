@@ -56,16 +56,20 @@ export default async function Page({
     },
     additionalProperty: [
       { "@type": "PropertyValue", name: "Origin", value: BRAND.origin },
-      { "@type": "PropertyValue", name: "Process", value: coffee.process },
-      { "@type": "PropertyValue", name: "Harvest", value: coffee.harvest },
-    ],
+      coffee.process
+        ? { "@type": "PropertyValue", name: "Process", value: coffee.process }
+        : null,
+      coffee.harvest
+        ? { "@type": "PropertyValue", name: "Harvest", value: coffee.harvest }
+        : null,
+    ].filter((property) => property !== null),
     offers: coffee.sizeOptions.map((option) => ({
       "@type": "Offer",
       sku: option.sku,
       availability:
         coffee.status === "sold_out"
           ? "https://schema.org/OutOfStock"
-          : coffee.status === "reserve"
+          : coffee.status === "reserve" || coffee.status === "reserve_collection"
             ? "https://schema.org/PreOrder"
             : "https://schema.org/InStock",
       url:

@@ -16,11 +16,17 @@ export function whatsAppUrl(coffeeName: string, size?: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 }
 
-export type CoffeeStatus = "available" | "reserve" | "sold_out" | "archived";
+export type CoffeeStatus =
+  | "available"
+  | "reserve"
+  | "reserve_collection"
+  | "sold_out"
+  | "archived";
 
 export const STATUS_LABELS: Record<CoffeeStatus, string> = {
   available: "Available",
   reserve: "Reserve Collection",
+  reserve_collection: "Reserve Collection",
   sold_out: "Currently Resting",
   archived: "Archived",
 };
@@ -60,12 +66,14 @@ export type Coffee = {
    * Producer/harvest-batch reference. Distinct from passportNumber: this
    * reflects internal lot/batch bookkeeping and, unlike the passport
    * number, is not a routing key and isn't guaranteed to be unique or permanent.
+   * Unset for prelaunch placeholders that don't have a real lot yet.
    */
-  lotNumber: string;
-  process: string;
-  harvest: string;
-  variety: string;
-  elevation: string;
+  lotNumber?: string;
+  /** Unset fields are honestly omitted from the passport table rather than shown as a fabricated value — used for prelaunch placeholders with no confirmed lot yet. */
+  process?: string;
+  harvest?: string;
+  variety?: string;
+  elevation?: string;
   /** Only set once the producer/farm/exporter has approved being named publicly. */
   producer?: string;
   farm?: string;
@@ -100,7 +108,7 @@ export const coffees: Coffee[] = [
     variety: TBC,
     elevation: TBC,
     status: "reserve",
-    featured: true,
+    featured: false,
     sizeOptions: [
       { size: "8 oz", netWeight: "227 g", sku: "IPC-ALT-8OZ-001", amazonUrl: "" },
       { size: "1 lb", netWeight: "454 g", sku: "IPC-ALT-1LB-001", amazonUrl: "" },
@@ -116,6 +124,31 @@ export const coffees: Coffee[] = [
     metaTitle: "Infinite Select Altura",
     metaDescription:
       "Meet Infinite Select Altura, specialty green coffee beans from Boquete, Panama. Traceable, premium, and selected with care by Infinite Panama Coffee.",
+  },
+  {
+    id: "a24aba96-909c-42a7-ba6f-49c4a550dcab",
+    passportNumber: "IPC-000001",
+    legacyPassport: false,
+    slug: "boquete-reserve",
+    coffeeName: "Boquete Reserve",
+    // Prelaunch placeholder: lotNumber/process/harvest/variety/elevation are
+    // deliberately left unset rather than fabricated. None of this is
+    // confirmed until Casa Ruiz's actual lot is selected.
+    status: "reserve_collection",
+    featured: true,
+    sizeOptions: [
+      { size: "To be announced", netWeight: "TBD", sku: "", amazonUrl: "" },
+    ],
+    story:
+      "Boquete Reserve is the next release in the Infinite Select™ collection. The final Casa Ruiz lot has not yet been selected — origin details, process, and harvest information will be published here once confirmed.",
+    storage:
+      "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
+    tastingNotes: [],
+    photos: [],
+    createdAt: "2026-07-09",
+    metaTitle: "Infinite Select Boquete Reserve",
+    metaDescription:
+      "Boquete Reserve, the next release in the Infinite Select™ collection from Boquete, Panama. The final lot is being selected — details coming soon from Infinite Panama Coffee.",
   },
 ];
 

@@ -53,8 +53,8 @@ const journeyStages = (coffee: Coffee) => [
     detail: coffee.producer,
     confirmed: Boolean(coffee.producer),
   },
-  { label: "Harvest", detail: coffee.harvest, confirmed: true },
-  { label: "Processing", detail: coffee.process, confirmed: true },
+  { label: "Harvest", detail: coffee.harvest, confirmed: Boolean(coffee.harvest) },
+  { label: "Processing", detail: coffee.process, confirmed: Boolean(coffee.process) },
   { label: "Drying", detail: undefined, confirmed: false },
   { label: "Quality Inspection", detail: undefined, confirmed: false },
   {
@@ -73,10 +73,13 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
   const stages = journeyStages(coffee);
   const passportRows = getPassportRows(coffee);
   const qrPaths = getQrPaths(coffee);
+  // Tracking identifier: falls back to the passport number when a coffee
+  // doesn't have a distinct lot number yet (e.g. a prelaunch placeholder).
+  const trackingLotId = coffee.lotNumber ?? coffee.passportNumber;
 
   return (
     <>
-      <QrScanLogger lotId={coffee.lotNumber} passportNumber={coffee.passportNumber} />
+      <QrScanLogger lotId={trackingLotId} passportNumber={coffee.passportNumber} />
       <main className="flex flex-1 flex-col items-center print:hidden">
         {/* Hero */}
         <section className="w-full bg-cream px-6 py-20 text-center text-forest sm:py-28">
@@ -114,7 +117,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 Reserve Your Allocation
               </a>
               <TrackedLink
-                lotId={coffee.lotNumber}
+                lotId={trackingLotId}
                 passportNumber={coffee.passportNumber}
                 action="whatsapp_clicked"
                 href={contactUrl}
@@ -256,7 +259,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                 </div>
                 {coffee.status === "sold_out" ? (
                   <ReserveAction
-                    lotId={coffee.lotNumber}
+                    lotId={trackingLotId}
                     passportNumber={coffee.passportNumber}
                     href={whatsAppUrl(
                       coffee.coffeeName,
@@ -268,7 +271,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
                   />
                 ) : (
                   <ReserveAction
-                    lotId={coffee.lotNumber}
+                    lotId={trackingLotId}
                     passportNumber={coffee.passportNumber}
                     href={
                       option.amazonUrl ||
@@ -442,7 +445,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <TrackedLink
-              lotId={coffee.lotNumber}
+              lotId={trackingLotId}
               passportNumber={coffee.passportNumber}
               action="whatsapp_clicked"
               href={contactUrl}
@@ -451,7 +454,7 @@ export default function CoffeePage({ coffee }: { coffee: Coffee }) {
               Message on WhatsApp
             </TrackedLink>
             <TrackedLink
-              lotId={coffee.lotNumber}
+              lotId={trackingLotId}
               passportNumber={coffee.passportNumber}
               action="amazon_clicked"
               href={AMAZON_STORE_URL}
