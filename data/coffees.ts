@@ -41,7 +41,8 @@ export type CoffeeSizeOption = {
 };
 
 /** "Pending Producer Confirmation" placeholders are intentional — do not fill in specifics without a real source. */
-const TBC = "Pending Producer Confirmation";
+export const PENDING_CONFIRMATION = "Pending Producer Confirmation";
+const TBC = PENDING_CONFIRMATION;
 
 export type Coffee = {
   /** Internal stable identifier. Never shown publicly, never used in a URL. */
@@ -199,6 +200,19 @@ export function getQrPaths(coffee: Coffee) {
     brandedSvg: `/qr/${coffee.passportNumber}-branded.svg`,
     brandedPng: `/qr/${coffee.passportNumber}-branded-1024.png`,
   };
+}
+
+/**
+ * The size option matching `size` (default "8 oz"), case-insensitive.
+ * Falls back to the first size option when there's no exact match — e.g.
+ * a prelaunch placeholder coffee with a single "To be announced" entry.
+ */
+export function getSizeOption(coffee: Coffee, size = "8 oz"): CoffeeSizeOption {
+  const normalized = size.trim().toLowerCase();
+  return (
+    coffee.sizeOptions.find((option) => option.size.trim().toLowerCase() === normalized) ??
+    coffee.sizeOptions[0]
+  );
 }
 
 /** Collectible display format for a passport number, e.g. "IPC-ALT-001" -> "IPC • ALT • 001", "IPC-000001" -> "IPC • 000001". */
