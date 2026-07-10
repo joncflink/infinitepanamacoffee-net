@@ -18,7 +18,7 @@ export default function FindPassport() {
           Enter the Passport Number printed on your coffee to explore its
           origin, harvest, process, and permanent provenance record.
         </p>
-        <PassportLookupForm className="mx-auto mt-8 max-w-md" />
+        <PassportLookupForm className="mx-auto mt-8 max-w-md" source="homepage" />
       </ScrollReveal>
     </section>
   );

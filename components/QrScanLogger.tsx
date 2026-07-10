@@ -2,12 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-
-function detectDeviceType(ua: string): string {
-  if (/iPad|Tablet/i.test(ua)) return "tablet";
-  if (/Mobi|Android/i.test(ua)) return "mobile";
-  return "desktop";
-}
+import { detectDeviceType } from "@/lib/supabase/track";
 
 /**
  * The printed QR itself encodes a bare canonical URL with no query string

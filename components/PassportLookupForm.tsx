@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCoffeeByPassportNumber } from "@/data/coffees";
+import { logProductEvent } from "@/lib/supabase/track";
 
 /**
  * Shared "enter your Passport Number" form — used on the homepage (embedded)
@@ -10,7 +11,14 @@ import { getCoffeeByPassportNumber } from "@/data/coffees";
  * manual-entry path for customers whose bag may not carry a QR at all (see
  * AMAZON_LABEL_ID_MODE in components/labels/constants.ts).
  */
-export default function PassportLookupForm({ className = "" }: { className?: string }) {
+export default function PassportLookupForm({
+  className = "",
+  source,
+}: {
+  className?: string;
+  /** Where this form instance lives, e.g. "homepage" or "passport_page" — passed through to product_events. */
+  source: string;
+}) {
   const router = useRouter();
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +33,8 @@ export default function PassportLookupForm({ className = "" }: { className?: str
       return;
     }
 
+    logProductEvent({ event: "passport_lookup_started", passportNumber: normalized, source });
+
     setChecking(true);
     const coffee = getCoffeeByPassportNumber(normalized);
     setChecking(false);
@@ -33,10 +43,20 @@ export default function PassportLookupForm({ className = "" }: { className?: str
       setError(
         "We couldn't find a coffee with that Passport Number. Please check the number printed on your bag and try again."
       );
+      logProductEvent({
+        event: "passport_lookup_not_found",
+        passportNumber: normalized,
+        source,
+      });
       return;
     }
 
     setError(null);
+    logProductEvent({
+      event: "passport_lookup_success",
+      passportNumber: coffee.passportNumber,
+      source,
+    });
     router.push(`/passport/${coffee.passportNumber}`);
   }
 

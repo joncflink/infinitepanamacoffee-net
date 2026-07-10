@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { useCellar } from "@/components/CellarProvider";
 import {
   STATUS_LABELS,
   getFeaturedCoffee,
   formatPassportDisplay,
 } from "@/data/coffees";
-import { logReorderEvent } from "@/lib/supabase/track";
+import { logProductEvent, logReorderEvent } from "@/lib/supabase/track";
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
@@ -34,6 +35,13 @@ function AccountSyncNote() {
 
 export default function CellarView() {
   const { items, remove } = useCellar();
+
+  const logged = useRef(false);
+  useEffect(() => {
+    if (logged.current) return;
+    logged.current = true;
+    logProductEvent({ event: "cellar_viewed" });
+  }, []);
 
   if (items.length === 0) {
     const featured = getFeaturedCoffee();
@@ -105,14 +113,19 @@ export default function CellarView() {
                   href={reorderUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() =>
+                  onClick={() => {
                     logReorderEvent({
                       lotId: coffee.lotNumber ?? coffee.passportNumber,
                       passportNumber: coffee.passportNumber,
                       action: "reorder_clicked",
                       destinationUrl: reorderUrl,
-                    })
-                  }
+                    });
+                    logProductEvent({
+                      event: "passport_reorder_clicked",
+                      passportNumber: coffee.passportNumber,
+                      source: "cellar_page",
+                    });
+                  }}
                   className="text-sm text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
                 >
                   Reorder
@@ -120,7 +133,7 @@ export default function CellarView() {
               )}
               <button
                 type="button"
-                onClick={() => remove(coffee.passportNumber)}
+                onClick={() => remove(coffee.passportNumber, "cellar_page")}
                 className="text-sm text-soft-gray underline underline-offset-4 transition-colors duration-300 hover:text-forest"
               >
                 Remove from Cellar

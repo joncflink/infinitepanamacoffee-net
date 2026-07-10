@@ -20,7 +20,7 @@ export default function PassportLookupPage() {
           origin, harvest, process, and permanent provenance record.
         </p>
 
-        <PassportLookupForm className="mx-auto mt-12 max-w-md" />
+        <PassportLookupForm className="mx-auto mt-12 max-w-md" source="passport_page" />
       </main>
       <SiteFooter />
     </>

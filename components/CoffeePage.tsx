@@ -15,6 +15,7 @@ import { OUR_PROMISE } from "@/data/site";
 import ReserveAction from "@/components/ReserveAction";
 import PrintCertificateButton from "@/components/PrintCertificateButton";
 import TrackedLink from "@/components/TrackedLink";
+import TrackedPassportLink from "@/components/TrackedPassportLink";
 import QrScanLogger from "@/components/QrScanLogger";
 
 function Divider() {
@@ -589,12 +590,15 @@ export default function CoffeePage({
           >
             WhatsApp
           </a>
-          <Link
+          <TrackedPassportLink
             href="/passport"
+            event="find_another_passport_clicked"
+            passportNumber={coffee.passportNumber}
+            source="passport_page"
             className="py-1 transition-colors duration-300 hover:text-forest"
           >
             Find Another Coffee Passport™
-          </Link>
+          </TrackedPassportLink>
           <Link
             href="/cellar"
             className="py-1 transition-colors duration-300 hover:text-forest"

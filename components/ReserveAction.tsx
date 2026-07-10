@@ -45,7 +45,7 @@ export default function ReserveAction({
         ) : (
           <button
             type="button"
-            onClick={() => add(passportNumber)}
+            onClick={() => add(passportNumber, "reserve_action")}
             className="text-xs text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
           >
             Add to My Infinite Cellar™

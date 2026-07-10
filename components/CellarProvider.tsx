@@ -8,6 +8,7 @@ import {
   type CoffeeSizeOption,
   type CoffeeStatus,
 } from "@/data/coffees";
+import { logProductEvent } from "@/lib/supabase/track";
 
 /**
  * Rehydrated view of a saved Cellar entry. Only `passportNumber` + `addedAt`
@@ -31,8 +32,8 @@ export type SavedCoffee = {
 type CellarContextValue = {
   items: SavedCoffee[];
   isSaved: (passportNumber: string) => boolean;
-  add: (passportNumber: string) => void;
-  remove: (passportNumber: string) => void;
+  add: (passportNumber: string, source?: string) => void;
+  remove: (passportNumber: string, source?: string) => void;
 };
 
 const CellarContext = createContext<CellarContextValue | null>(null);
@@ -66,11 +67,14 @@ export function CellarProvider({ children }: { children: React.ReactNode }) {
     [rawItems]
   );
 
-  const add = useCallback((passportNumber: string) => cellarRepository.add(passportNumber), []);
-  const remove = useCallback(
-    (passportNumber: string) => cellarRepository.remove(passportNumber),
-    []
-  );
+  const add = useCallback((passportNumber: string, source?: string) => {
+    cellarRepository.add(passportNumber);
+    logProductEvent({ event: "cellar_item_added", passportNumber, source });
+  }, []);
+  const remove = useCallback((passportNumber: string, source?: string) => {
+    cellarRepository.remove(passportNumber);
+    logProductEvent({ event: "cellar_item_removed", passportNumber, source });
+  }, []);
   const isSaved = useCallback(
     (passportNumber: string) => rawItems.some((item) => item.passportNumber === passportNumber),
     [rawItems]
