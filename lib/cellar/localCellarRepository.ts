@@ -1,17 +1,10 @@
-/**
- * Storage layer for "My Infinite Cellar™".
- *
- * v1 persists to the visitor's own browser (localStorage) — no accounts,
- * no backend. Every consumer goes through this module's functions rather
- * than touching localStorage directly, so swapping this for a real
- * account-backed store later (e.g. Supabase) only means rewriting the
- * functions in this file — the UI and CellarProvider stay the same.
- */
+import type { CellarItem, CellarListener, CellarRepository } from "./types";
 
-export type CellarItem = {
-  passportNumber: string;
-  addedAt: string;
-};
+/**
+ * v1 storage for "My Infinite Cellar™": the visitor's own browser
+ * (localStorage), no accounts, no backend. This is the implementation
+ * actually used by the app today — see ./index.ts.
+ */
 
 const STORAGE_KEY = "infinite-cellar:v1";
 const EMPTY: CellarItem[] = [];
@@ -29,7 +22,7 @@ function isValidCellarItem(item: unknown): item is CellarItem {
 }
 
 /** Returns a stable array reference when the underlying data hasn't changed, as required by useSyncExternalStore. */
-export function readCellar(): CellarItem[] {
+function list(): CellarItem[] {
   if (typeof window === "undefined") return EMPTY;
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (raw === cachedRaw) return cachedItems;
@@ -47,18 +40,17 @@ export function readCellar(): CellarItem[] {
   return cachedItems;
 }
 
-export function getServerCellarSnapshot(): CellarItem[] {
+function getServerSnapshot(): CellarItem[] {
   return EMPTY;
 }
 
-type Listener = () => void;
-const listeners = new Set<Listener>();
+const listeners = new Set<CellarListener>();
 
 function emitChange() {
   for (const listener of listeners) listener();
 }
 
-export function subscribeToCellar(listener: Listener): () => void {
+function subscribe(listener: CellarListener): () => void {
   listeners.add(listener);
   const onStorage = (event: StorageEvent) => {
     if (event.key === STORAGE_KEY) emitChange();
@@ -70,18 +62,26 @@ export function subscribeToCellar(listener: Listener): () => void {
   };
 }
 
-function writeCellar(items: CellarItem[]): void {
+function write(items: CellarItem[]): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   emitChange();
 }
 
-export function addToCellar(passportNumber: string): void {
-  const items = readCellar();
+function add(passportNumber: string): void {
+  const items = list();
   if (items.some((item) => item.passportNumber === passportNumber)) return;
-  writeCellar([...items, { passportNumber, addedAt: new Date().toISOString() }]);
+  write([...items, { passportNumber, addedAt: new Date().toISOString() }]);
 }
 
-export function removeFromCellar(passportNumber: string): void {
-  writeCellar(readCellar().filter((item) => item.passportNumber !== passportNumber));
+function remove(passportNumber: string): void {
+  write(list().filter((item) => item.passportNumber !== passportNumber));
 }
+
+export const localCellarRepository: CellarRepository = {
+  list,
+  add,
+  remove,
+  subscribe,
+  getServerSnapshot,
+};

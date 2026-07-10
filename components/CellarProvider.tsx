@@ -1,13 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from "react";
-import {
-  addToCellar,
-  getServerCellarSnapshot,
-  readCellar,
-  removeFromCellar,
-  subscribeToCellar,
-} from "@/lib/cellar";
+import { cellarRepository } from "@/lib/cellar";
 import {
   getCoffeeByPassportNumber,
   getCollection,
@@ -17,9 +11,10 @@ import {
 
 /**
  * Rehydrated view of a saved Cellar entry. Only `passportNumber` + `addedAt`
- * are actually persisted (see lib/cellar.ts) — everything else is looked up
- * live from the canonical coffee record so the Cellar never stores a stale
- * copy of data that can change (name, process, status, etc).
+ * are actually persisted (see lib/cellar/, behind the CellarRepository
+ * abstraction) — everything else is looked up live from the canonical
+ * coffee record so the Cellar never stores a stale copy of data that can
+ * change (name, process, status, etc).
  */
 export type SavedCoffee = {
   passportNumber: string;
@@ -44,9 +39,9 @@ const CellarContext = createContext<CellarContextValue | null>(null);
 
 export function CellarProvider({ children }: { children: React.ReactNode }) {
   const rawItems = useSyncExternalStore(
-    subscribeToCellar,
-    readCellar,
-    getServerCellarSnapshot
+    cellarRepository.subscribe,
+    cellarRepository.list,
+    cellarRepository.getServerSnapshot
   );
 
   const items = useMemo<SavedCoffee[]>(
@@ -71,8 +66,11 @@ export function CellarProvider({ children }: { children: React.ReactNode }) {
     [rawItems]
   );
 
-  const add = useCallback((passportNumber: string) => addToCellar(passportNumber), []);
-  const remove = useCallback((passportNumber: string) => removeFromCellar(passportNumber), []);
+  const add = useCallback((passportNumber: string) => cellarRepository.add(passportNumber), []);
+  const remove = useCallback(
+    (passportNumber: string) => cellarRepository.remove(passportNumber),
+    []
+  );
   const isSaved = useCallback(
     (passportNumber: string) => rawItems.some((item) => item.passportNumber === passportNumber),
     [rawItems]
