@@ -60,10 +60,20 @@ export const WEBSITE_URL = "https://www.infinitepanamacoffee.com";
  * "lot": show only "Lot Number [number]" — the Infinite Coffee Passport™
  * still exists internally, the Amazon customer never sees it (Assumption
  * B, most conservative).
- * Default is "passport" for design review only — this does NOT mean
- * passport mode is Amazon-approved. Pending written Amazon confirmation
- * under Case 21076327341.
+ * Default is "lot" — the Passport Number appears only when this is
+ * explicitly set to "passport" (e.g. for a design-review pass), never by
+ * default. Case 21076327341 is still open with no written approval, so
+ * nothing that could reach print should default to showing it.
  */
 export type AmazonLabelIdMode = "passport" | "lot";
 export const AMAZON_LABEL_ID_MODE: AmazonLabelIdMode =
-  process.env.AMAZON_LABEL_ID_MODE === "lot" ? "lot" : "passport";
+  process.env.AMAZON_LABEL_ID_MODE === "passport" ? "passport" : "lot";
+
+/**
+ * Separate from the Passport Number question above: a physical QR insert
+ * (a card/slip inside the bag, not printed on the bag itself) has been
+ * discussed but not built — no component or asset for it exists in this
+ * codebase. It remains pending Amazon's written clarification under Case
+ * 21076327341, same case as above. Do not build or print it as an
+ * approved asset until that confirmation is in hand.
+ */
