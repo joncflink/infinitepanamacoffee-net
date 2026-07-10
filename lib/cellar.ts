@@ -19,6 +19,15 @@ const EMPTY: CellarItem[] = [];
 let cachedRaw: string | null = null;
 let cachedItems: CellarItem[] = EMPTY;
 
+function isValidCellarItem(item: unknown): item is CellarItem {
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    typeof (item as CellarItem).passportNumber === "string" &&
+    typeof (item as CellarItem).savedAt === "string"
+  );
+}
+
 /** Returns a stable array reference when the underlying data hasn't changed, as required by useSyncExternalStore. */
 export function readCellar(): CellarItem[] {
   if (typeof window === "undefined") return EMPTY;
@@ -27,7 +36,11 @@ export function readCellar(): CellarItem[] {
   cachedRaw = raw;
   try {
     const parsed = raw ? JSON.parse(raw) : [];
-    cachedItems = Array.isArray(parsed) ? parsed : EMPTY;
+    // Drop anything that doesn't match today's shape — e.g. entries saved
+    // before the pre-launch lotId -> passportNumber rename. Never hand a
+    // malformed item to a consumer; better to silently omit it than crash
+    // the page (getCoffeeByPassportNumber assumes a real string).
+    cachedItems = Array.isArray(parsed) ? parsed.filter(isValidCellarItem) : EMPTY;
   } catch {
     cachedItems = EMPTY;
   }

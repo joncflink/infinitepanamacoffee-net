@@ -300,6 +300,7 @@ export function getAllCoffeeSlugs(): string[] {
 }
 
 export function getCoffeeByPassportNumber(passportNumber: string): Coffee | undefined {
+  if (!passportNumber) return undefined;
   const normalized = passportNumber.toUpperCase();
   return coffees.find((c) => c.passportNumber === normalized);
 }
