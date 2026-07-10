@@ -265,7 +265,11 @@ export default function CoffeePage({
                   </p>
                   <p className="mt-1 text-xs text-soft-gray">{option.sku}</p>
                 </div>
-                {coffee.status === "sold_out" ? (
+                {coffee.status === "archived" || coffee.available === false ? (
+                  <p className="text-sm italic text-soft-gray">
+                    No longer available
+                  </p>
+                ) : coffee.status === "sold_out" ? (
                   <ReserveAction
                     lotId={trackingLotId}
                     passportNumber={coffee.passportNumber}
