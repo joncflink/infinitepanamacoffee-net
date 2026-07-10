@@ -18,6 +18,20 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+/**
+ * Non-blocking teaser only — no auth exists yet (nothing signs up, nothing
+ * is gated on it). The real migration path this refers to is documented in
+ * lib/cellar/supabaseCellarRepository.ts; this note doesn't go live until
+ * that's actually wired in.
+ */
+function AccountSyncNote() {
+  return (
+    <p className="text-xs text-soft-gray/80">
+      Save your Cellar across devices — account sync is coming soon.
+    </p>
+  );
+}
+
 export default function CellarView() {
   const { items, remove } = useCellar();
 
@@ -45,6 +59,9 @@ export default function CellarView() {
           >
             Explore Current Collection
           </Link>
+        </div>
+        <div className="mt-8">
+          <AccountSyncNote />
         </div>
       </div>
     );
@@ -112,6 +129,9 @@ export default function CellarView() {
           </div>
         );
       })}
+      <div className="pt-2 text-center">
+        <AccountSyncNote />
+      </div>
     </div>
   );
 }
