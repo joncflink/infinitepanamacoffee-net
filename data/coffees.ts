@@ -42,9 +42,8 @@ export type CoffeeSizeOption = {
   amazonUrl: string;
 };
 
-/** "Pending Producer Confirmation" placeholders are intentional — do not fill in specifics without a real source. */
+/** Used as a `??` fallback for producer-style facts not yet confirmed — intentional, do not fill in specifics without a real source. */
 export const PENDING_CONFIRMATION = "Pending Producer Confirmation";
-const TBC = PENDING_CONFIRMATION;
 
 export type Coffee = {
   /** Internal stable identifier. Never shown publicly, never used in a URL. */
@@ -65,6 +64,22 @@ export type Coffee = {
   slug: string;
   /** The actual coffee's name, e.g. "Altura". Fully dynamic — never hardcode a coffee name in a template. */
   coffeeName: string;
+  /**
+   * Overrides BRAND.collection for this one record. Unset for every coffee
+   * today — everything currently rolls up under "Infinite Select™". Exists
+   * so a genuinely new collection (e.g. "Geisha Collection™") can be
+   * introduced later as pure data, with zero template changes. Read via
+   * getCollection(coffee), never coffee.collection directly.
+   */
+  collection?: string;
+  /**
+   * Overrides BRAND.productType for this one record — e.g. an Arabica lot
+   * wants "Single-Origin Green Arabica Coffee Beans" without forcing every
+   * other coffee (including legacy records) to change too. Read via
+   * getProductType(coffee), never coffee.productType or BRAND.productType
+   * directly.
+   */
+  productType?: string;
   /**
    * Producer/harvest-batch reference. Distinct from passportNumber: this
    * reflects internal lot/batch bookkeeping and, unlike the passport
@@ -110,8 +125,8 @@ export const coffees: Coffee[] = [
     lotNumber: "IPC-ALT-001",
     process: "Washed",
     harvest: "2025–2026",
-    variety: TBC,
-    elevation: TBC,
+    // variety/elevation deliberately unset, not fabricated — matches how
+    // producer/farm/exporter already work on this record.
     status: "reserve",
     featured: false,
     sizeOptions: [
@@ -134,26 +149,30 @@ export const coffees: Coffee[] = [
     id: "a24aba96-909c-42a7-ba6f-49c4a550dcab",
     passportNumber: "IPC-000001",
     legacyPassport: false,
-    slug: "boquete-reserve",
-    coffeeName: "Boquete Reserve",
-    // Prelaunch placeholder: lotNumber/process/harvest/variety/elevation are
-    // deliberately left unset rather than fabricated. None of this is
-    // confirmed until Casa Ruiz's actual lot is selected.
+    slug: "boquete-shb-arabica-washed",
+    // "Boquete SHB Arabica Washed" is a working/sample name for this
+    // record, not yet Casa Ruiz's confirmed commercial product name.
+    // Process and harvest season are real supplier facts and safe to
+    // print; lotNumber/packedOn/bestBy are deliberately left unset —
+    // never fabricate a lot number or pack/best-by date.
+    coffeeName: "Boquete SHB Arabica Washed",
+    productType: "Single-Origin Green Arabica Coffee Beans",
+    process: "Washed",
+    harvest: "2025–2026",
+    exporter: "Casa Ruiz S.A.",
     status: "reserve_collection",
     featured: true,
-    sizeOptions: [
-      { size: "To be announced", netWeight: "TBD", sku: "", amazonUrl: "" },
-    ],
+    sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
     story:
-      "Boquete Reserve is the next release in the Infinite Select™ collection. The final Casa Ruiz lot has not yet been selected — origin details, process, and harvest information will be published here once confirmed.",
+      "Boquete SHB Arabica Washed is a sample record for the next release in the Infinite Select™ collection — a washed-process lot from Boquete, Chiriquí, exported by Casa Ruiz S.A. The commercial product name, final lot, and pack/best-by dates have not yet been confirmed by Casa Ruiz.",
     storage:
-      "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
+      "Store in a cool, dry place away from heat, moisture, direct sunlight, and strong odors.",
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
-    metaTitle: "Infinite Select Boquete Reserve",
+    metaTitle: "Infinite Select Boquete SHB Arabica Washed",
     metaDescription:
-      "Boquete Reserve, the next release in the Infinite Select™ collection from Boquete, Panama. The final lot is being selected — details coming soon from Infinite Panama Coffee.",
+      "Boquete SHB Arabica Washed, a sample record for the next release in the Infinite Select™ collection from Boquete, Panama. Final naming and lot details are pending Casa Ruiz confirmation.",
   },
 ];
 
@@ -253,8 +272,18 @@ export const sampleCoffees: Coffee[] = [
   },
 ];
 
+/** The collection this coffee belongs to — coffee.collection if set, else the brand-wide default. */
+export function getCollection(coffee: Coffee): string {
+  return coffee.collection ?? BRAND.collection;
+}
+
+/** This coffee's product-type statement — coffee.productType if set, else the brand-wide default. */
+export function getProductType(coffee: Coffee): string {
+  return coffee.productType ?? BRAND.productType;
+}
+
 export function getFullName(coffee: Coffee): string {
-  return `${BRAND.collection} ${coffee.coffeeName}`;
+  return `${getCollection(coffee)} ${coffee.coffeeName}`;
 }
 
 /** The coffee the homepage hero/contact section spotlights. */

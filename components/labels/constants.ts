@@ -11,12 +11,20 @@ export const LABEL_COLORS = {
   ivory: "#F7F3EA",
 } as const;
 
-/** Fallback for a lot-specific fact (process/harvest/variety/elevation/etc.) that hasn't been selected yet — distinct from PENDING_CONFIRMATION, which is about a producer/exporter/farm not yet being named. */
-export const PENDING_LOT_SELECTION = "Pending Final Lot Selection";
+/**
+ * Unmistakable "this field has no real data yet" placeholder — deliberately
+ * looks like raw template syntax, not prose, so nobody can mistake it for
+ * real copy and send it to print by accident. This is the ONLY fallback
+ * style used anywhere in the label system (front, back, print) — no soft
+ * "Pending ..." phrasing, which reads enough like plausible real copy
+ * that an incomplete record could slip through unnoticed.
+ */
+export function fieldPlaceholder(fieldName: string): string {
+  return `{{${fieldName}}}`;
+}
 
-export const QR_PENDING_MESSAGE = "QR Pending Final Lot Selection";
-
-export const UNROASTED_ROAST_BEFORE = "UNROASTED • ROAST BEFORE BREWING";
+export const OUR_PROMISE =
+  "Every lot is sourced directly from Panama, packed at origin, and permanently linked to its Infinite Coffee Passport™ for complete provenance and traceability.";
 
 export const TAGLINE_LINES = ["Selected with patience.", "Built for generations."];
 
@@ -32,10 +40,30 @@ export const PACKED_EXPORTED_BY = {
 };
 
 export const IMPORTED_DISTRIBUTED_BY = {
-  name: "Infinite Wealth Management",
+  name: "Infinite Wealth Management LLC",
   addressLine1: "690 Main Street #816",
   addressLine2: "Safety Harbor, FL 34695 USA",
 };
 
 export const WEBSITE_DISPLAY = "www.infinitepanamacoffee.com";
 export const WEBSITE_URL = "https://www.infinitepanamacoffee.com";
+
+/**
+ * Which identifier the Amazon-bound back label shows as its primary
+ * customer-facing reference. Locked interpretation: neither mode ever
+ * shows a QR code, QR placeholder, external URL, or scan instruction —
+ * that's settled. What's still pending Amazon's written response (Case
+ * #21076327341 — see the vault's PROJECT_STATE.md Label Contingency Plans)
+ * is only whether the static Passport Number itself may appear on the bag.
+ * "passport": show "Infinite Coffee Passport™ / Passport No. [number]"
+ * as a static, non-clickable identifier (Assumption A).
+ * "lot": show only "Lot Number [number]" — the Infinite Coffee Passport™
+ * still exists internally, the Amazon customer never sees it (Assumption
+ * B, most conservative).
+ * Default is "passport" for design review only — this does NOT mean
+ * passport mode is Amazon-approved. Pending written Amazon confirmation
+ * under Case 21076327341.
+ */
+export type AmazonLabelIdMode = "passport" | "lot";
+export const AMAZON_LABEL_ID_MODE: AmazonLabelIdMode =
+  process.env.AMAZON_LABEL_ID_MODE === "lot" ? "lot" : "passport";

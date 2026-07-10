@@ -7,6 +7,7 @@ import {
   getAllPassportNumbers,
   getCoffeeByPassportNumber,
   getFullName,
+  getProductType,
 } from "@/data/coffees";
 import CoffeePage from "@/components/CoffeePage";
 
@@ -58,7 +59,7 @@ export default async function Page({
     name: getFullName(coffee),
     description: coffee.metaDescription,
     sku: coffee.passportNumber,
-    category: BRAND.productType,
+    category: getProductType(coffee),
     brand: {
       "@type": "Brand",
       name: "Infinite Panama Coffee",

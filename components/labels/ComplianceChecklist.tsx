@@ -1,4 +1,4 @@
-import { BRAND, getSizeOption, type Coffee } from "@/data/coffees";
+import { BRAND, getProductType, getSizeOption, type Coffee } from "@/data/coffees";
 import { LABEL_COLORS } from "./constants";
 
 /**
@@ -15,17 +15,19 @@ function getChecklist(coffee: Coffee): Array<{ label: string; satisfied: boolean
     { label: "Brand name present", satisfied: Boolean(BRAND.name) },
     {
       label: "Statement of identity present",
-      satisfied: Boolean(coffee.coffeeName && BRAND.productType),
+      satisfied: Boolean(coffee.coffeeName && getProductType(coffee)),
     },
     { label: "Unroasted notice present", satisfied: true },
     { label: "Net weight present", satisfied: hasRealNetWeight },
     { label: "Product of Panama present", satisfied: true },
+    { label: "Farm present", satisfied: Boolean(coffee.farm) },
+    { label: "Producer present", satisfied: Boolean(coffee.producer) },
     { label: "Exporter present", satisfied: Boolean(coffee.exporter) },
     { label: "Importer/distributor present", satisfied: true },
     { label: "Lot code present", satisfied: Boolean(coffee.lotNumber) },
     { label: "Packed On field present", satisfied: Boolean(coffee.packedOn) },
     { label: "Best By field present", satisfied: Boolean(coffee.bestBy) },
-    { label: "QR does not replace required label information", satisfied: true },
+    { label: "No QR code, placeholder, or external URL on Amazon label", satisfied: true },
   ];
 }
 

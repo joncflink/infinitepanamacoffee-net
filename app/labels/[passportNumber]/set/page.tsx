@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { existsSync } from "node:fs";
-import path from "node:path";
 import { notFound } from "next/navigation";
-import { getAllLabelPassportNumbers, getLabelCoffeeByPassportNumber, getFullName, getQrPaths } from "@/data/coffees";
+import { getAllLabelPassportNumbers, getLabelCoffeeByPassportNumber, getFullName } from "@/data/coffees";
 import FrontLabel from "@/components/labels/FrontLabel";
 import BackLabel from "@/components/labels/BackLabel";
 import ComplianceChecklist from "@/components/labels/ComplianceChecklist";
@@ -25,9 +23,6 @@ export default async function LabelSetPage({
   const { passportNumber } = await params;
   const coffee = getLabelCoffeeByPassportNumber(passportNumber);
   if (!coffee) notFound();
-
-  const qrPaths = getQrPaths(coffee);
-  const qrExists = existsSync(path.join(process.cwd(), "public", "qr", `${coffee.passportNumber}.svg`));
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
@@ -61,7 +56,7 @@ export default async function LabelSetPage({
           <p className="mb-3 text-center text-xs font-medium tracking-[0.2em] text-soft-gray print:hidden">
             BACK
           </p>
-          <BackLabel coffee={coffee} qrSvgPath={qrPaths.plainSvg} qrExists={qrExists} />
+          <BackLabel coffee={coffee} />
         </div>
       </div>
 

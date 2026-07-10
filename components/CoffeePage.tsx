@@ -7,6 +7,7 @@ import {
   formatPassportDisplay,
   formatPassportDisplayCompact,
   getFullName,
+  getProductType,
   getQrPaths,
   whatsAppUrl,
 } from "@/data/coffees";
@@ -25,7 +26,7 @@ function getPassportRows(coffee: Coffee): Array<[string, string]> {
   const rows: Array<[string, string | undefined]> = [
     ["Collection", BRAND.collection],
     ["Coffee", coffee.coffeeName],
-    ["Product Type", BRAND.productType],
+    ["Product Type", getProductType(coffee)],
     ["Origin", BRAND.origin],
     ["Harvest", coffee.harvest],
     ["Packed On", coffee.packedOn],
@@ -108,7 +109,7 @@ export default function CoffeePage({
                 </span>
               </h1>
               <p className="mt-3 text-lg text-charcoal">
-                {BRAND.productType} from {originShort}
+                {getProductType(coffee)} from {originShort}
               </p>
               <p className="mt-3 text-sm italic text-soft-gray">
                 Selected with patience. Built for generations.
