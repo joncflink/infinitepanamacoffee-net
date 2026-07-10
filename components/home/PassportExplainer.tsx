@@ -13,9 +13,9 @@ export default function PassportExplainer() {
           The Infinite Coffee Passport™
         </h2>
         <p className="mx-auto mt-8 max-w-xl text-base leading-8 text-cream/90">
-          Every bag carries a QR code. Scanning it opens that coffee&rsquo;s
-          digital passport &mdash; a permanent, traceable record of where it
-          came from and how it was grown.
+          Every coffee carries a permanent Infinite Coffee Passport™ &mdash;
+          a traceable record of where it came from and how it was grown.
+          Look yours up with the Passport Number printed on your bag.
         </p>
 
         <ul className="mx-auto mt-12 grid max-w-md grid-cols-2 gap-x-10 gap-y-4 text-left text-sm leading-6 text-cream/90">

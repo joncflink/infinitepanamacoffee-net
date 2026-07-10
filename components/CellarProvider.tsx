@@ -1,17 +1,40 @@
 "use client";
 
-import { createContext, useCallback, useContext, useSyncExternalStore } from "react";
+import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from "react";
 import {
   addToCellar,
   getServerCellarSnapshot,
   readCellar,
   removeFromCellar,
   subscribeToCellar,
-  type CellarItem,
 } from "@/lib/cellar";
+import {
+  getCoffeeByPassportNumber,
+  getCollection,
+  type CoffeeSizeOption,
+  type CoffeeStatus,
+} from "@/data/coffees";
+
+/**
+ * Rehydrated view of a saved Cellar entry. Only `passportNumber` + `addedAt`
+ * are actually persisted (see lib/cellar.ts) — everything else is looked up
+ * live from the canonical coffee record so the Cellar never stores a stale
+ * copy of data that can change (name, process, status, etc).
+ */
+export type SavedCoffee = {
+  passportNumber: string;
+  coffeeName: string;
+  collection: string;
+  process?: string;
+  harvest?: string;
+  lotNumber?: string;
+  addedAt: string;
+  status: CoffeeStatus;
+  sizeOptions: CoffeeSizeOption[];
+};
 
 type CellarContextValue = {
-  items: CellarItem[];
+  items: SavedCoffee[];
   isSaved: (passportNumber: string) => boolean;
   add: (passportNumber: string) => void;
   remove: (passportNumber: string) => void;
@@ -20,17 +43,39 @@ type CellarContextValue = {
 const CellarContext = createContext<CellarContextValue | null>(null);
 
 export function CellarProvider({ children }: { children: React.ReactNode }) {
-  const items = useSyncExternalStore(
+  const rawItems = useSyncExternalStore(
     subscribeToCellar,
     readCellar,
     getServerCellarSnapshot
   );
 
+  const items = useMemo<SavedCoffee[]>(
+    () =>
+      rawItems.flatMap((item) => {
+        const coffee = getCoffeeByPassportNumber(item.passportNumber);
+        if (!coffee) return [];
+        return [
+          {
+            passportNumber: coffee.passportNumber,
+            coffeeName: coffee.coffeeName,
+            collection: getCollection(coffee),
+            process: coffee.process,
+            harvest: coffee.harvest,
+            lotNumber: coffee.lotNumber,
+            addedAt: item.addedAt,
+            status: coffee.status,
+            sizeOptions: coffee.sizeOptions,
+          },
+        ];
+      }),
+    [rawItems]
+  );
+
   const add = useCallback((passportNumber: string) => addToCellar(passportNumber), []);
   const remove = useCallback((passportNumber: string) => removeFromCellar(passportNumber), []);
   const isSaved = useCallback(
-    (passportNumber: string) => items.some((item) => item.passportNumber === passportNumber),
-    [items]
+    (passportNumber: string) => rawItems.some((item) => item.passportNumber === passportNumber),
+    [rawItems]
   );
 
   return (

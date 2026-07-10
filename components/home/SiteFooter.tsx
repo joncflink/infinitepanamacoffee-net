@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function SiteFooter() {
   const year = new Date().getFullYear();
 
@@ -10,30 +12,36 @@ export default function SiteFooter() {
         &copy; {year} Infinite Panama Coffee. All rights reserved.
       </p>
       <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs">
-        <a
+        <Link
           href="/founders-letter"
           className="py-1 transition-colors duration-300 hover:text-forest"
         >
           Founder&rsquo;s Letter
-        </a>
-        <a
+        </Link>
+        <Link
+          href="/passport"
+          className="py-1 transition-colors duration-300 hover:text-forest"
+        >
+          Coffee Passport™
+        </Link>
+        <Link
           href="/cellar"
           className="py-1 transition-colors duration-300 hover:text-forest"
         >
-          My Cellar
-        </a>
-        <a
+          My Infinite Cellar™
+        </Link>
+        <Link
           href="/privacy"
           className="py-1 transition-colors duration-300 hover:text-forest"
         >
           Privacy
-        </a>
-        <a
+        </Link>
+        <Link
           href="/terms"
           className="py-1 transition-colors duration-300 hover:text-forest"
         >
           Terms
-        </a>
+        </Link>
       </nav>
     </footer>
   );

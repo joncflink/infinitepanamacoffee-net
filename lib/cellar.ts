@@ -10,7 +10,7 @@
 
 export type CellarItem = {
   passportNumber: string;
-  savedAt: string;
+  addedAt: string;
 };
 
 const STORAGE_KEY = "infinite-cellar:v1";
@@ -24,7 +24,7 @@ function isValidCellarItem(item: unknown): item is CellarItem {
     typeof item === "object" &&
     item !== null &&
     typeof (item as CellarItem).passportNumber === "string" &&
-    typeof (item as CellarItem).savedAt === "string"
+    typeof (item as CellarItem).addedAt === "string"
   );
 }
 
@@ -79,7 +79,7 @@ function writeCellar(items: CellarItem[]): void {
 export function addToCellar(passportNumber: string): void {
   const items = readCellar();
   if (items.some((item) => item.passportNumber === passportNumber)) return;
-  writeCellar([...items, { passportNumber, savedAt: new Date().toISOString() }]);
+  writeCellar([...items, { passportNumber, addedAt: new Date().toISOString() }]);
 }
 
 export function removeFromCellar(passportNumber: string): void {

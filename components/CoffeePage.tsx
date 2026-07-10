@@ -590,10 +590,16 @@ export default function CoffeePage({
             WhatsApp
           </a>
           <Link
+            href="/passport"
+            className="py-1 transition-colors duration-300 hover:text-forest"
+          >
+            Find Another Coffee Passport™
+          </Link>
+          <Link
             href="/cellar"
             className="py-1 transition-colors duration-300 hover:text-forest"
           >
-            My Cellar
+            My Infinite Cellar™
           </Link>
         </nav>
       </footer>

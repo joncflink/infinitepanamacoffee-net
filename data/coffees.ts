@@ -364,7 +364,7 @@ export function getAllLabelPassportNumbers(): string[] {
 }
 
 /** Collectible display format for a passport number, e.g. "IPC-ALT-001" -> "IPC • ALT • 001", "IPC-000001" -> "IPC • 000001". */
-export function formatPassportDisplay(coffee: Coffee): string {
+export function formatPassportDisplay(coffee: Pick<Coffee, "passportNumber">): string {
   return coffee.passportNumber.split("-").join(" • ");
 }
 

@@ -1,4 +1,5 @@
 import Hero from "@/components/home/Hero";
+import FindPassport from "@/components/home/FindPassport";
 import WhyInfinite from "@/components/home/WhyInfinite";
 import PassportExplainer from "@/components/home/PassportExplainer";
 import OurPromise from "@/components/home/OurPromise";
@@ -12,6 +13,7 @@ export default function Home() {
     <>
       <main className="flex flex-1 flex-col items-center">
         <Hero />
+        <FindPassport />
         <WhyInfinite />
         <PassportExplainer />
         <OurPromise />
