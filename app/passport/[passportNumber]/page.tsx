@@ -22,16 +22,30 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { passportNumber } = await params;
   const coffee = getCoffeeByPassportNumber(passportNumber);
-  if (!coffee) return {};
+  if (!coffee) {
+    // notFound() below renders app/passport/[passportNumber]/not-found.tsx,
+    // but that segment's own metadata export isn't reliably applied when
+    // reached via a programmatic notFound() call from an already-matched
+    // dynamic route (this one always matches — [passportNumber] is a
+    // single required segment, so not-found.tsx is never reached any other
+    // way). Set it here instead, where it actually takes effect.
+    return { title: "Passport Not Found", robots: { index: false, follow: true } };
+  }
+
+  // Dynamic, derived from the coffee name — never a stored/editable field,
+  // so it can't drift out of the "[Coffee Name] Coffee Passport™" format.
+  // Only the public passportNumber is ever used here or in the canonical
+  // URL below — never coffee.id (the internal uuid).
+  const title = `${coffee.coffeeName} Coffee Passport™`;
 
   return {
-    title: coffee.metaTitle,
+    title,
     description: coffee.metaDescription,
     alternates: {
       canonical: `/passport/${coffee.passportNumber}`,
     },
     openGraph: {
-      title: coffee.metaTitle,
+      title,
       description: coffee.metaDescription,
     },
   };

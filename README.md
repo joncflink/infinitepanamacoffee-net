@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Infinite Panama Coffee
 
-## Getting Started
+Marketing site and Infinite Coffee Passport™ / My Infinite Cellar™ experience for Infinite Panama Coffee™ — specialty green coffee from Boquete, Panama.
 
-First, run the development server:
+Live at [infinitepanamacoffee.com](https://infinitepanamacoffee.com).
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev       # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Requires a `.env.local` with:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=       # server-side only, label/admin scripts
+AMAZON_LABEL_ID_MODE=            # optional — "passport" or "lot" (default); see ARCHITECTURE.md
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Other scripts:
 
-## Learn More
+```bash
+npm run build        # production build
+npm run start         # serve a production build
+npm run lint           # eslint
+npm test                # vitest run
+npm run test:watch       # vitest watch mode
+npm run generate:qr       # regenerate passport QR assets (public/qr/)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## What this is
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Infinite Coffee Passport™** (`/passport`, `/passport/[passportNumber]`) — customers look up a coffee by the Passport Number printed on the bag and see its full provenance record.
+- **My Infinite Cellar™** (`/cellar`) — a private, per-browser collection of coffees a customer has saved, no account required.
+- A physical label system (`/labels/*`, internal only) that generates Amazon-compliant packaging artwork from the same coffee data.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Where to look next
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** — how the Passport lookup and Cellar actually work, the route map, analytics events, Amazon compliance boundaries, and the future Supabase migration path. Start here for anything technical.
+- **[PROJECT_STATE.md](./PROJECT_STATE.md)** — current status: what's live, what's pending, known limitations.
+- **[NEXT_ACTIONS.md](./NEXT_ACTIONS.md)** — concrete pending action items.
+- **[CHANGELOG.md](./CHANGELOG.md)** — what's shipped, in order.
+- **[public/qr/README.md](./public/qr/README.md)**, **[public/labels/README.md](./public/labels/README.md)** — QR asset generation and the physical label system, respectively.

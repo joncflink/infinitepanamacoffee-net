@@ -111,7 +111,6 @@ export type Coffee = {
   tastingNotes: string[];
   photos: string[];
   createdAt: string;
-  metaTitle: string;
   metaDescription: string;
 };
 
@@ -141,7 +140,6 @@ export const coffees: Coffee[] = [
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-06",
-    metaTitle: "Infinite Select Altura",
     metaDescription:
       "Meet Infinite Select Altura, specialty green coffee beans from Boquete, Panama. Traceable, premium, and selected with care by Infinite Panama Coffee.",
   },
@@ -170,7 +168,6 @@ export const coffees: Coffee[] = [
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
-    metaTitle: "Infinite Select Boquete SHB Arabica Washed",
     metaDescription:
       "Boquete SHB Arabica Washed, a sample record for the next release in the Infinite Select™ collection from Boquete, Panama. Final naming and lot details are pending Casa Ruiz confirmation.",
   },
@@ -206,7 +203,6 @@ export const sampleCoffees: Coffee[] = [
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
-    metaTitle: "Infinite Select Boquete SHB Arabica Washed Altura (Sample)",
     metaDescription:
       "Development sample record for Boquete SHB Arabica Washed Altura, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
   },
@@ -226,7 +222,6 @@ export const sampleCoffees: Coffee[] = [
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
-    metaTitle: "Infinite Select La Jungla Washed (Sample)",
     metaDescription:
       "Development sample record for La Jungla Washed, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
   },
@@ -246,7 +241,6 @@ export const sampleCoffees: Coffee[] = [
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
-    metaTitle: "Infinite Select Panama SHB Washed Premium (Sample)",
     metaDescription:
       "Development sample record for Panama SHB Washed Premium, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
   },
@@ -266,7 +260,6 @@ export const sampleCoffees: Coffee[] = [
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
-    metaTitle: "Infinite Select Vanguardia Natural Geisha (Sample)",
     metaDescription:
       "Development sample record for Vanguardia Natural Geisha, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
   },
@@ -301,7 +294,8 @@ export function getAllCoffeeSlugs(): string[] {
 
 export function getCoffeeByPassportNumber(passportNumber: string): Coffee | undefined {
   if (!passportNumber) return undefined;
-  const normalized = passportNumber.toUpperCase();
+  const normalized = passportNumber.trim().toUpperCase();
+  if (!normalized) return undefined;
   return coffees.find((c) => c.passportNumber === normalized);
 }
 

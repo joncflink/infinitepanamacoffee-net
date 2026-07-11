@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "My Infinite Cellar™",
   description:
     "Your saved Infinite Panama Coffee lots — reserved, reordered, and collected over time.",
+  // Personal utility page (localStorage-backed, per-browser) — not a search
+  // landing page, and its contents differ per visitor.
+  robots: { index: false, follow: false },
 };
 
 export default function CellarPage() {

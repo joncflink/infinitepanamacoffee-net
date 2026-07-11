@@ -18,8 +18,8 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   metadataBase: new URL("https://infinitepanamacoffee.com"),
   title: {
-    default: "Infinite Panama Coffee",
-    template: "%s | Infinite Panama Coffee",
+    default: "Infinite Panama Coffee™",
+    template: "%s | Infinite Panama Coffee™",
   },
   description:
     "Specialty green coffee beans from Boquete, Panama. Selected with care by Infinite Panama Coffee, a member of The Infinite Companies.",
