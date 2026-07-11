@@ -83,6 +83,15 @@ Governed by `components/labels/constants.ts`, distinct from the website's own de
 
 The website itself is unrestricted by these Amazon-specific rules — Passport lookup via normal navigation, the printable Certificate of Provenance's QR code (on `/passport/[passportNumber]`, print-only), etc. are all fine; only the physical Amazon package is constrained.
 
+## Amazon storefront fallback
+
+Every "Buy on Amazon" CTA on the site routes through `getAmazonCta()` (`data/coffees.ts`) and renders via `<TrackedAmazonLink>` (`components/TrackedAmazonLink.tsx`) — no component hardcodes an Amazon URL or label directly.
+
+- If the coffee (or the specific size passed in) has a real listing (`CoffeeSizeOption.amazonUrl`), the CTA links to it, labeled "Buy on Amazon".
+- Otherwise it falls back to the single global constant `AMAZON_STOREFRONT_URL` (`data/coffees.ts`), labeled "Visit Our Amazon Store".
+- `AMAZON_STOREFRONT_URL` is currently a **seller search page** (`https://www.amazon.com/s?me=A3A3ULRCNZYQWC&marketplaceID=ATVPDKIKX0DER`), not a branded Amazon Store — Infinite Panama Coffee doesn't have Brand Registry yet. Once it does, replace this one constant with the real Amazon Store URL and every CTA on the site updates automatically.
+- Clicks are tracked via `reorder_events.action` as `amazon_product` (real listing) or `amazon_storefront_fallback` (fallback) — see migration `013_reorder_events_amazon_actions.sql` (proposed, not yet applied).
+
 ## Testing
 
 `npm test` runs the Vitest suite (`npm run test:watch` for watch mode). Config: `vitest.config.ts` (jsdom environment, `@/*` path alias matching `tsconfig.json`), `vitest.setup.ts` (jest-dom matchers).

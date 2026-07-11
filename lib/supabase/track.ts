@@ -7,13 +7,20 @@ export function detectDeviceType(ua: string): string {
   return "desktop";
 }
 
-/** Must match the `action` check constraint on reorder_events (migrations 001, 010). */
+/**
+ * Must match the `action` check constraint on reorder_events (migrations
+ * 001, 010, 013). "amazon_product"/"amazon_storefront_fallback" are the
+ * only actions TrackedAmazonLink fires (see getAmazonCta) — "amazon_clicked"
+ * stays listed here for historical rows only, nothing fires it anymore.
+ */
 export type ReorderAction =
   | "reserve_clicked"
   | "reorder_clicked"
   | "join_next_harvest_clicked"
   | "amazon_clicked"
-  | "whatsapp_clicked";
+  | "whatsapp_clicked"
+  | "amazon_product"
+  | "amazon_storefront_fallback";
 
 /**
  * Fire-and-forget CTA tracking. Never call `.select()` here — reorder_events

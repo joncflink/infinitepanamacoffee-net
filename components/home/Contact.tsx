@@ -1,5 +1,6 @@
 import ScrollReveal from "@/components/ScrollReveal";
-import { AMAZON_STORE_URL, getFeaturedCoffee, whatsAppUrl } from "@/data/coffees";
+import { getFeaturedCoffee, whatsAppUrl } from "@/data/coffees";
+import TrackedAmazonLink from "@/components/TrackedAmazonLink";
 
 export default function Contact() {
   const featured = getFeaturedCoffee();
@@ -23,14 +24,11 @@ export default function Contact() {
           >
             WhatsApp
           </a>
-          <a
-            href={AMAZON_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <TrackedAmazonLink
+            coffee={featured}
+            lotId={featured.lotNumber ?? featured.passportNumber}
             className="w-full rounded-full border border-forest px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-forest/5 hover:-translate-y-0.5 sm:w-auto"
-          >
-            Amazon Store
-          </a>
+          />
         </div>
       </ScrollReveal>
     </section>

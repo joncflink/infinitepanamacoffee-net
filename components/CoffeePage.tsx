@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { Coffee } from "@/data/coffees";
 import {
-  AMAZON_STORE_URL,
   BRAND,
   STATUS_LABELS,
   formatPassportDisplay,
@@ -15,6 +14,7 @@ import { OUR_PROMISE } from "@/data/site";
 import ReserveAction from "@/components/ReserveAction";
 import PrintCertificateButton from "@/components/PrintCertificateButton";
 import TrackedLink from "@/components/TrackedLink";
+import TrackedAmazonLink from "@/components/TrackedAmazonLink";
 import TrackedPassportLink from "@/components/TrackedPassportLink";
 import QrScanLogger from "@/components/QrScanLogger";
 
@@ -265,7 +265,7 @@ export default function CoffeePage({
                   </p>
                   <p className="mt-1 text-xs text-soft-gray">{option.sku}</p>
                 </div>
-                {coffee.status === "archived" || coffee.available === false ? (
+                {coffee.status === "archived" || coffee.sellable === false ? (
                   <p className="text-sm italic text-soft-gray">
                     No longer available
                   </p>
@@ -465,15 +465,11 @@ export default function CoffeePage({
             >
               Message on WhatsApp
             </TrackedLink>
-            <TrackedLink
+            <TrackedAmazonLink
+              coffee={coffee}
               lotId={trackingLotId}
-              passportNumber={coffee.passportNumber}
-              action="amazon_clicked"
-              href={AMAZON_STORE_URL}
               className="w-full rounded-full border border-cream px-9 py-[1.1rem] text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:bg-cream/10 hover:-translate-y-0.5 sm:w-auto"
-            >
-              Visit Amazon Store
-            </TrackedLink>
+            />
           </div>
         </section>
       </main>
@@ -578,14 +574,11 @@ export default function CoffeePage({
           >
             Contact
           </a>
-          <a
-            href={AMAZON_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <TrackedAmazonLink
+            coffee={coffee}
+            lotId={trackingLotId}
             className="py-1 transition-colors duration-300 hover:text-forest"
-          >
-            Amazon Store
-          </a>
+          />
           <a
             href={contactUrl}
             target="_blank"

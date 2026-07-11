@@ -1,6 +1,16 @@
 export const WHATSAPP_NUMBER = "12072335784";
-export const AMAZON_STORE_URL =
-  "https://www.amazon.com/sp?ie=UTF8&seller=A3A3ULRCNZYQWC&isAmazonFulfilled=1&asin=0702052329&ref_=olp_merch_name_2";
+/**
+ * Canonical Amazon storefront fallback — used whenever a coffee (or size)
+ * has no confirmed Amazon listing of its own. This is a seller-search page,
+ * not yet a branded Amazon Store page — Infinite Panama Coffee doesn't have
+ * Brand Registry yet. Once it does, replace this one constant with the real
+ * Amazon Store URL and every CTA that reads it (via getAmazonCta, never a
+ * hardcoded copy) updates automatically. Never reference this directly from
+ * a component — go through getAmazonCta so the fallback/exact-listing
+ * decision and CTA label stay in one place.
+ */
+export const AMAZON_STOREFRONT_URL =
+  "https://www.amazon.com/s?me=A3A3ULRCNZYQWC&marketplaceID=ATVPDKIKX0DER";
 
 /** Fixed brand-level facts, true for every coffee this brand will ever sell. Never per-record — do not add these to the Coffee type. */
 export const BRAND = {
@@ -22,7 +32,8 @@ export type CoffeeStatus =
   | "reserve_collection"
   | "sold_out"
   | "archived"
-  | "sample";
+  | "sample"
+  | "inventory_candidate";
 
 export const STATUS_LABELS: Record<CoffeeStatus, string> = {
   available: "Available",
@@ -31,7 +42,30 @@ export const STATUS_LABELS: Record<CoffeeStatus, string> = {
   sold_out: "Currently Resting",
   archived: "Archived",
   sample: "Development Sample",
+  inventory_candidate: "Inventory Candidate",
 };
+
+/**
+ * Shared status vocabulary for `availabilityStatus` (what the supplier is
+ * quoting/offering) and `inventoryStatus` (what Infinite Panama Coffee
+ * physically has). Keep the two separate in data even though they share a
+ * type — e.g. a lot can be `availabilityStatus: "available"` from the
+ * supplier while `inventoryStatus: "planned"` (nothing purchased yet).
+ * Distinct from `CoffeeStatus`, which is the public-facing display status
+ * shown on the website — these two fields are never rendered publicly.
+ */
+export type InventoryStatusValue =
+  | "available"
+  | "unavailable"
+  | "pending_confirmation"
+  | "planned"
+  | "ordered"
+  | "inbound"
+  | "received"
+  | "sellable"
+  | "sold_out"
+  | "archived"
+  | "legacy";
 
 export type CoffeeSizeOption = {
   size: string;
@@ -101,10 +135,32 @@ export type Coffee = {
   /** Internal stock count — not rendered on the public passport page. */
   inventory?: number;
   status: CoffeeStatus;
-  /** Purchasability gate, distinct from `status`. Undefined means available (true) — only set explicitly false for records (e.g. development samples) that must never appear purchasable anywhere. */
-  available?: boolean;
+  /** Purchasability gate, distinct from `status`. Undefined means sellable (true) — only set explicitly false for records (e.g. inventory candidates not yet purchased/received) that must never appear purchasable anywhere. */
+  sellable?: boolean;
   /** Selects which coffee the homepage hero/contact section spotlights. Exactly one coffee should be featured; falls back to the first entry if none is. */
   featured?: boolean;
+  /**
+   * Sourcing/inventory-tracking fields. Never rendered on any public page —
+   * internal only (see app/inventory). All optional: a candidate record may
+   * only have a subset confirmed at any given time, and an unset field is
+   * shown as genuinely absent (never "Pending"/"N/A"/a fabricated value) on
+   * the internal views, same honesty rule as the public passport fields.
+   */
+  supplier?: string;
+  requestedQuantityLb?: number;
+  purchasedQuantityLb?: number;
+  receivedQuantityLb?: number;
+  availableQuantityLb?: number;
+  reservedQuantityLb?: number;
+  soldQuantityLb?: number;
+  quotedPricePerLb?: number;
+  actualCostPerLb?: number;
+  /** What the supplier is quoting/offering — keep separate from inventoryStatus (what we physically have). */
+  availabilityStatus?: InventoryStatusValue;
+  /** What Infinite Panama Coffee physically has — keep separate from availabilityStatus (what the supplier is offering). */
+  inventoryStatus?: InventoryStatusValue;
+  /** Free-text internal note — e.g. why a lot is unavailable, or what it substitutes for. Never shown publicly. */
+  notes?: string;
   sizeOptions: CoffeeSizeOption[];
   story: string;
   storage: string;
@@ -174,94 +230,117 @@ export const coffees: Coffee[] = [
 ];
 
 /**
- * Development/sample fixtures used only to test the label system
- * (components/labels/, app/labels/). These are real Casa Ruiz lot names
- * pulled from actual supplier price lists, but the records themselves are
- * NOT commitments that any of these coffees will be available for sale —
- * status "sample" and available: false mark that explicitly. Deliberately
- * kept out of the `coffees` array: they must never be reachable via the
- * public /passport/[passportNumber] route, the /coffee/[slug] redirect,
- * the homepage featured-coffee lookup, or any other public-facing helper
- * that iterates `coffees`. Their passportNumbers use a "SAMPLE-" prefix
- * (not "IPC-") so they can never be confused with a real, permanent
- * passport number and never collide with the real sequential scheme.
+ * Real Casa Ruiz coffees under evaluation for inventory — not yet
+ * purchased, not yet received, not confirmed sellable. `sellable: false`
+ * on every record here enforces that regardless of any other field.
+ * Deliberately kept out of the `coffees` array: they must never be
+ * reachable via the public /passport/[passportNumber] route, the
+ * /coffee/[slug] redirect, the homepage featured-coffee lookup, or any
+ * other public-facing helper that iterates `coffees`. No final production
+ * Passport Number is assigned until a lot is actually purchased and
+ * received — their passportNumbers use a "PENDING-" prefix (not "IPC-")
+ * so they can never be confused with a real, permanent passport number,
+ * can never collide with the real sequential scheme, and can never
+ * accidentally satisfy the label system's "confirmed Passport Number"
+ * requirement for production label proofs (see components/labels).
  */
-export const sampleCoffees: Coffee[] = [
+export const inventoryCandidates: Coffee[] = [
   {
     id: "43cc1927-a8a5-4b12-acfd-ae8d29793eb3",
-    passportNumber: "SAMPLE-001",
+    passportNumber: "PENDING-001",
     slug: "boquete-shb-arabica-washed-altura",
     coffeeName: "Boquete SHB Arabica Washed Altura",
     process: "Washed",
-    status: "sample",
-    available: false,
+    supplier: "Casa Ruiz S.A.",
+    quotedPricePerLb: 6.0,
+    availabilityStatus: "available",
+    requestedQuantityLb: 100,
+    inventoryStatus: "planned",
+    sellable: false,
+    status: "inventory_candidate",
     sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
     story:
-      "This is a development sample record for Boquete SHB Arabica Washed Altura, used to test the Infinite Coffee Passport™ label system. It is not a confirmed product and is not available for sale.",
+      "Boquete SHB Arabica Washed Altura is under evaluation for the Infinite Select™ collection — a washed-process lot quoted by Casa Ruiz S.A. at $6.00/lb, with 100 lb requested. Available from the supplier; not yet purchased or received.",
     storage:
       "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
     metaDescription:
-      "Development sample record for Boquete SHB Arabica Washed Altura, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
+      "Boquete SHB Arabica Washed Altura, a candidate lot from Casa Ruiz S.A. under evaluation for the Infinite Select™ collection. Not yet purchased.",
   },
   {
     id: "5e0d1fef-1988-4b65-bc16-521e4a510763",
-    passportNumber: "SAMPLE-002",
+    passportNumber: "PENDING-002",
     slug: "la-jungla-washed",
     coffeeName: "La Jungla Washed",
     process: "Washed",
-    status: "sample",
-    available: false,
+    supplier: "Casa Ruiz S.A.",
+    availabilityStatus: "unavailable",
+    requestedQuantityLb: 40,
+    inventoryStatus: "unavailable",
+    sellable: false,
+    status: "inventory_candidate",
     sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
     story:
-      "This is a development sample record for La Jungla Washed, used to test the Infinite Coffee Passport™ label system. It is not a confirmed product and is not available for sale.",
+      "La Jungla Washed was evaluated for the Infinite Select™ collection at a requested 40 lb, but is currently unavailable from Casa Ruiz S.A.",
     storage:
       "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
     metaDescription:
-      "Development sample record for La Jungla Washed, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
+      "La Jungla Washed, a candidate lot from Casa Ruiz S.A. currently unavailable. Requested for the Infinite Select™ collection, not purchased.",
+    notes: "Currently unavailable from Casa Ruiz S.A. No substitute has been offered for this lot.",
   },
   {
     id: "24bdc281-1a84-4479-a1a8-892e9e51a870",
-    passportNumber: "SAMPLE-003",
+    passportNumber: "PENDING-003",
     slug: "panama-shb-washed-premium",
     coffeeName: "Panama SHB Washed Premium",
     process: "Washed",
-    status: "sample",
-    available: false,
+    supplier: "Casa Ruiz S.A.",
+    availabilityStatus: "unavailable",
+    requestedQuantityLb: 20,
+    inventoryStatus: "unavailable",
+    sellable: false,
+    status: "inventory_candidate",
     sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
     story:
-      "This is a development sample record for Panama SHB Washed Premium, used to test the Infinite Coffee Passport™ label system. It is not a confirmed product and is not available for sale.",
+      "Panama SHB Washed Premium was evaluated for the Infinite Select™ collection at a requested 20 lb, but is currently unavailable from Casa Ruiz S.A.",
     storage:
       "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
     metaDescription:
-      "Development sample record for Panama SHB Washed Premium, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
+      "Panama SHB Washed Premium, a candidate lot from Casa Ruiz S.A. currently unavailable. Requested for the Infinite Select™ collection, not purchased.",
+    notes: "Currently unavailable from Casa Ruiz S.A. No substitute has been offered for this lot.",
   },
   {
     id: "8e7bcfc0-d96a-44cf-b69d-1928c53610d2",
-    passportNumber: "SAMPLE-004",
+    passportNumber: "PENDING-004",
     slug: "vanguardia-natural-geisha",
     coffeeName: "Vanguardia Natural Geisha",
     process: "Natural",
-    status: "sample",
-    available: false,
+    supplier: "Casa Ruiz S.A.",
+    availabilityStatus: "available",
+    requestedQuantityLb: 40,
+    inventoryStatus: "planned",
+    sellable: false,
+    status: "inventory_candidate",
     sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
     story:
-      "This is a development sample record for Vanguardia Natural Geisha, used to test the Infinite Coffee Passport™ label system. It is not a confirmed product and is not available for sale.",
+      "Vanguardia Natural Geisha is under evaluation for the Infinite Select™ collection — a natural-process Geisha lot offered by Casa Ruiz S.A. as the substitute for the unavailable Bromelias Geisha Natural, at the same price and with a mostly similar cup profile. Available from the supplier; not yet purchased or received.",
     storage:
       "Store green coffee in a cool, dry place. Protect from heat, moisture, direct sunlight, and strong odors.",
     tastingNotes: [],
     photos: [],
     createdAt: "2026-07-09",
     metaDescription:
-      "Development sample record for Vanguardia Natural Geisha, used to test the Infinite Panama Coffee label system. Not a confirmed product.",
+      "Vanguardia Natural Geisha, a candidate lot from Casa Ruiz S.A. under evaluation for the Infinite Select™ collection. Not yet purchased.",
+    notes:
+      "Offered by Casa Ruiz S.A. as the substitute for unavailable Bromelias Geisha Natural, at the same price and with a mostly similar cup profile. No specific per-lb price was given for this substitute — do not invent one.",
   },
 ];
 
@@ -339,13 +418,73 @@ export function getSizeOption(coffee: Coffee, size = "8 oz"): CoffeeSizeOption {
   );
 }
 
+export type AmazonCta = {
+  href: string;
+  label: string;
+  /** True when `href` is a real listing for this coffee, false when it's the AMAZON_STOREFRONT_URL fallback. */
+  isExactListing: boolean;
+};
+
+/**
+ * The single source of truth for "which Amazon URL, which label" — every
+ * Amazon CTA in the app should go through this rather than re-deriving it.
+ * Pass `size` when the CTA is for one specific size option; omit it to ask
+ * "does this coffee have an Amazon listing at all" (any size).
+ * Takes only `sizeOptions` (not the full Coffee) so it also works with
+ * CellarProvider's SavedCoffee projection.
+ */
+export function getAmazonCta(
+  coffee: Pick<Coffee, "sizeOptions">,
+  size?: CoffeeSizeOption
+): AmazonCta {
+  const amazonUrl = size?.amazonUrl || coffee.sizeOptions.find((s) => s.amazonUrl)?.amazonUrl;
+  if (amazonUrl) {
+    return { href: amazonUrl, label: "Buy on Amazon", isExactListing: true };
+  }
+  return { href: AMAZON_STOREFRONT_URL, label: "Visit Our Amazon Store", isExactListing: false };
+}
+
 /**
  * Every coffee the /labels preview system can show: the real public
- * catalog plus development samples. Never used by public-facing routes —
- * only app/labels/** should call these.
+ * catalog plus inventory candidates. Never used by public-facing routes —
+ * only app/labels/** should call these. This is always preview-only —
+ * nothing under /labels/** is the actual production artifact (that's a
+ * human printing/exporting a PDF outside the app), so a candidate record
+ * showing up here is never "generating a production label," regardless of
+ * its sellable/inventoryStatus.
  */
 export function getAllLabelCoffees(): Coffee[] {
-  return [...coffees, ...sampleCoffees];
+  return [...coffees, ...inventoryCandidates];
+}
+
+/**
+ * Internal inventory views (see app/inventory) — never used by
+ * public-facing routes. Each reads only `inventoryCandidates` except
+ * getSellableInventory, which reads the real public catalog: only a coffee
+ * that made it into `coffees` (i.e. already has a real assigned Passport
+ * Number) can ever be sellable.
+ */
+
+/** Requested quantity, quoted price, availability — coffees not yet purchased. */
+export function getPlannedInventory(): Coffee[] {
+  return inventoryCandidates.filter((c) => c.inventoryStatus === "planned");
+}
+
+/** Ordered/inbound coffees — none yet; this will start returning records once a candidate is actually ordered. */
+export function getInboundInventory(): Coffee[] {
+  return inventoryCandidates.filter(
+    (c) => c.inventoryStatus === "ordered" || c.inventoryStatus === "inbound"
+  );
+}
+
+/** Received, reserved, and available-to-sell quantities — the real public catalog only. */
+export function getSellableInventory(): Coffee[] {
+  return coffees.filter((c) => c.sellable !== false);
+}
+
+/** Candidates the supplier can't currently fulfill. */
+export function getUnavailableCoffees(): Coffee[] {
+  return inventoryCandidates.filter((c) => c.availabilityStatus === "unavailable");
 }
 
 export function getLabelCoffeeByPassportNumber(passportNumber: string): Coffee | undefined {

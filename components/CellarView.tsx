@@ -8,7 +8,8 @@ import {
   getFeaturedCoffee,
   formatPassportDisplay,
 } from "@/data/coffees";
-import { logProductEvent, logReorderEvent } from "@/lib/supabase/track";
+import { logProductEvent } from "@/lib/supabase/track";
+import TrackedAmazonLink from "@/components/TrackedAmazonLink";
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
@@ -78,8 +79,6 @@ export default function CellarView() {
   return (
     <div className="space-y-6 text-left">
       {items.map((coffee) => {
-        const reorderUrl = coffee.sizeOptions.find((s) => s.amazonUrl)?.amazonUrl;
-
         return (
           <div
             key={coffee.passportNumber}
@@ -108,29 +107,18 @@ export default function CellarView() {
               >
                 View Passport
               </Link>
-              {reorderUrl && (
-                <a
-                  href={reorderUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    logReorderEvent({
-                      lotId: coffee.lotNumber ?? coffee.passportNumber,
-                      passportNumber: coffee.passportNumber,
-                      action: "reorder_clicked",
-                      destinationUrl: reorderUrl,
-                    });
-                    logProductEvent({
-                      event: "passport_reorder_clicked",
-                      passportNumber: coffee.passportNumber,
-                      source: "cellar_page",
-                    });
-                  }}
-                  className="text-sm text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
-                >
-                  Reorder
-                </a>
-              )}
+              <TrackedAmazonLink
+                coffee={coffee}
+                lotId={coffee.lotNumber ?? coffee.passportNumber}
+                onClick={() =>
+                  logProductEvent({
+                    event: "passport_reorder_clicked",
+                    passportNumber: coffee.passportNumber,
+                    source: "cellar_page",
+                  })
+                }
+                className="text-sm text-forest underline underline-offset-4 transition-colors duration-300 hover:text-forest/80"
+              />
               <button
                 type="button"
                 onClick={() => remove(coffee.passportNumber, "cellar_page")}

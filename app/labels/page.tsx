@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { coffees, sampleCoffees, getFullName, STATUS_LABELS, type Coffee } from "@/data/coffees";
+import { coffees, inventoryCandidates, getFullName, STATUS_LABELS, type Coffee } from "@/data/coffees";
 
 export const metadata: Metadata = {
   title: "Label Preview",
@@ -12,16 +12,16 @@ function CoffeeCard({ coffee }: { coffee: Coffee }) {
     <div className="rounded-lg border border-gold/25 px-6 py-5">
       <div className="flex flex-wrap items-center gap-2">
         <p className="font-heading text-lg text-forest">{getFullName(coffee)}</p>
-        {coffee.status === "sample" && (
+        {(coffee.status === "sample" || coffee.status === "inventory_candidate") && (
           <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-[10px] font-medium tracking-wide text-forest">
-            DEVELOPMENT SAMPLE
+            {coffee.status === "sample" ? "DEVELOPMENT SAMPLE" : "INVENTORY CANDIDATE"}
           </span>
         )}
       </div>
       <p className="mt-1 text-xs text-soft-gray">
         {coffee.passportNumber} &middot; {STATUS_LABELS[coffee.status]}
         {coffee.legacyPassport ? " · Legacy passport" : ""}
-        {coffee.available === false ? " · Not available" : ""}
+        {coffee.sellable === false ? " · Not sellable" : ""}
       </p>
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <Link
@@ -75,15 +75,19 @@ export default function LabelsIndexPage() {
 
       <div className="mt-12">
         <p className="text-xs font-medium tracking-[0.2em] text-soft-gray">
-          DEVELOPMENT SAMPLES — NOT COMMITMENTS, NOT AVAILABLE FOR SALE
+          INVENTORY CANDIDATES — NOT PURCHASED, NOT SELLABLE
         </p>
         <p className="mt-2 text-xs italic text-soft-gray">
-          Real Casa Ruiz lot names used only to prove the label system is
-          driven by coffee records, not templates. Never reachable via the
-          public passport route.
+          Real Casa Ruiz coffees under evaluation for inventory. See{" "}
+          <Link href="/inventory" className="underline underline-offset-4">
+            /inventory
+          </Link>{" "}
+          for sourcing status. Never reachable via the public passport route
+          — no final Passport Number is assigned until a lot is purchased
+          and received.
         </p>
         <div className="mt-4 space-y-4">
-          {sampleCoffees.map((coffee) => (
+          {inventoryCandidates.map((coffee) => (
             <CoffeeCard key={coffee.passportNumber} coffee={coffee} />
           ))}
         </div>
