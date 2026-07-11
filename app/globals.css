@@ -4,6 +4,16 @@
   --forest-green: #1f4d3a;
   --cream: #f7f2e8;
   --gold: #c8a44d;
+  /*
+   * Same gold, lightened just enough to clear WCAG AA (4.5:1) as actual
+   * text/button-label color against --forest-green — the base --gold
+   * only manages ~2.1:1 on cream and ~4.1:1 on forest, both short of AA.
+   * Use this instead of --gold anywhere gold IS the text or a button
+   * label color; leave --gold alone for borders/dividers/tinted
+   * backgrounds, which aren't held to text-contrast rules and don't need
+   * to change.
+   */
+  --gold-accessible: #d3b56f;
   --dark-gray: #555555;
 }
 
@@ -11,6 +21,7 @@
   --color-forest: var(--forest-green);
   --color-cream: var(--cream);
   --color-gold: var(--gold);
+  --color-gold-accessible: var(--gold-accessible);
   --color-dark-gray: var(--dark-gray);
   --color-charcoal: var(--dark-gray);
   --color-soft-gray: var(--dark-gray);
@@ -48,5 +59,26 @@ body {
   .reveal-visible {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/*
+ * Site-wide hover/transition effects (the transition-all + hover:-translate-y
+ * pattern used on most buttons and links) aren't individually gated behind
+ * prefers-reduced-motion — this catches all of them in one place instead of
+ * touching every component. Content/layout is unaffected; only motion is
+ * removed.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

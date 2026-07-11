@@ -80,7 +80,7 @@ export default function PassportLookupForm({
           }}
           aria-invalid={error ? "true" : undefined}
           aria-describedby={error ? "passport-number-error" : undefined}
-          className="w-full rounded-full border border-gold/50 bg-cream px-6 py-4 text-center text-sm tracking-[0.15em] text-charcoal placeholder:text-dark-gray/50 focus:border-forest focus:outline-none sm:text-left"
+          className="w-full rounded-full border border-gold/50 bg-cream px-6 py-4 text-center text-sm tracking-[0.15em] text-charcoal placeholder:text-dark-gray/50 focus:border-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest sm:text-left"
         />
         <button
           type="submit"

@@ -166,7 +166,7 @@ export default function CoffeePage({
               <dt className="text-sm leading-6 text-soft-gray">Status</dt>
               <dd className="text-right">
                 <span className="flex items-center justify-end gap-1.5 text-xs font-medium tracking-[0.15em] text-forest">
-                  <span className="text-gold">●</span>VERIFIED
+                  <span aria-hidden="true">●</span>VERIFIED
                 </span>
                 <span className="mt-1 block text-sm font-medium leading-6 text-charcoal">
                   {STATUS_LABELS[coffee.status]}

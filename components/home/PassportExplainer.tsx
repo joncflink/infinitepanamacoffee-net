@@ -29,7 +29,7 @@ export default function PassportExplainer() {
 
         <Link
           href={`/passport/${featured.passportNumber}#passport`}
-          className="mt-12 inline-block rounded-full border border-gold px-9 py-[1.1rem] text-sm tracking-wide text-gold transition-all duration-300 ease-out hover:bg-gold/10 hover:-translate-y-0.5"
+          className="mt-12 inline-block rounded-full border border-gold-accessible px-9 py-[1.1rem] text-sm tracking-wide text-gold-accessible transition-all duration-300 ease-out hover:bg-gold-accessible/10 hover:-translate-y-0.5"
         >
           Explore Infinite Coffee Passport™
         </Link>

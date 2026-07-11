@@ -27,7 +27,7 @@ export default function Hero() {
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center px-6 py-20 text-center text-cream">
         <Mark variant="light" />
 
-        <p className="mt-4 text-[0.91rem] tracking-[0.35em] text-gold">
+        <p className="mt-4 text-[0.91rem] tracking-[0.35em] text-gold-accessible">
           100% BOQUETE, PANAMA
         </p>
         <h1 className="mt-2 font-heading leading-tight">
@@ -48,7 +48,7 @@ export default function Hero() {
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href={`/passport/${featured.passportNumber}#reserve`}
-            className="rounded-full bg-gold px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-gold/90 hover:-translate-y-0.5"
+            className="rounded-full bg-gold-accessible px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-gold-accessible/90 hover:-translate-y-0.5"
           >
             Reserve Your Allocation
           </Link>
