@@ -76,6 +76,143 @@ export type CoffeeSizeOption = {
   amazonUrl: string;
 };
 
+/**
+ * The coarse, physical-goods journey a coffee moves through — from catalog
+ * entry through to sale or archive. Distinct from `AmazonApprovalStatus`
+ * below: this field is never a substitute for tracking approval detail, and
+ * approval detail is never collapsed into this field. Some stages here
+ * mark an Amazon-approval checkpoint being reached (e.g.
+ * "amazon_approval_pending"), but the actual approval state, dates, case
+ * ID, and denial reason live only on the dedicated `amazonApproval*`
+ * fields on `Coffee`.
+ */
+export type ProductLifecycleStatus =
+  | "catalog"
+  | "pre_production"
+  | "approval_lot_planned"
+  | "approval_lot_ordered"
+  | "invoice_received"
+  | "amazon_application_ready"
+  | "amazon_application_submitted"
+  | "amazon_approval_pending"
+  | "amazon_approved"
+  | "amazon_denied"
+  | "production_released"
+  | "ordered"
+  | "inbound"
+  | "prep_center_received"
+  | "fba_ready"
+  | "fba_inbound"
+  | "sellable"
+  | "sold_out"
+  | "alternate_channel"
+  | "archived";
+
+/**
+ * Amazon Grocery & Gourmet Foods category-approval state — the fine-grained
+ * companion to `ProductLifecycleStatus`. `not_started` and
+ * `more_information_requested` are both "not yet approved" for every gate
+ * check in this file; the distinction exists purely so the dashboard can
+ * show you which one you're looking at.
+ */
+export type AmazonApprovalStatus =
+  | "not_started"
+  | "invoice_needed"
+  | "application_ready"
+  | "submitted"
+  | "pending"
+  | "approved"
+  | "denied"
+  | "more_information_requested";
+
+/**
+ * What happened to the small approval-lot's physical units once the
+ * application invoice need is satisfied — never assume "held_for_full_launch"
+ * by default; an unset disposition means genuinely undecided.
+ */
+export type ApprovalLotDisposition =
+  | "held_for_full_launch"
+  | "sold_direct"
+  | "sold_wholesale"
+  | "local_sale"
+  | "used_for_photography"
+  | "used_for_quality_testing"
+  | "repacked"
+  | "credited_to_full_order"
+  | "other";
+
+/**
+ * Tracks the smallest legitimate commercial purchase made solely to
+ * produce Amazon's required qualifying invoice — deliberately separate
+ * from the full production order. `proposedQuantity` must never be
+ * hardcoded; it only ever reflects a quantity Jon has actually supplied.
+ */
+export type ApprovalLotWorkflow = {
+  proposedQuantity?: number;
+  unitFormat?: string;
+  supplierConfirmed?: boolean;
+  invoiceRequirementsNotes?: string;
+  paymentStatus?: "not_paid" | "paid" | "partial";
+  invoiceReceived?: boolean;
+  applicationSubmitted?: boolean;
+  approvalOutcome?: "pending" | "approved" | "denied";
+  disposition?: ApprovalLotDisposition;
+  dispositionNotes?: string;
+};
+
+export type AlternateChannelName =
+  | "infinitepanamacoffee_com"
+  | "local_panama_sales"
+  | "us_direct_sales"
+  | "wholesale"
+  | "cafes"
+  | "home_roaster_communities"
+  | "specialty_retailers"
+  | "events"
+  | "corporate_gifts";
+
+/** No channel activates itself — moving past "not_planned" is always a deliberate, separate action. */
+export type AlternateChannelStatus = "not_planned" | "planned" | "in_progress" | "ready" | "active";
+
+export type AlternateChannelPlan = {
+  channel: AlternateChannelName;
+  status: AlternateChannelStatus;
+  /** What's actually needed before this channel could go "ready" — never assumed, only what's been identified. */
+  readinessChecklist: string[];
+  notes?: string;
+};
+
+/**
+ * Risk-model inputs, one set per coffee. Every field is optional and
+ * unitless-by-omission on purpose — calculateFinancialRisk() below only
+ * computes an output when every input it depends on is actually present,
+ * so a missing cost never turns into a silently wrong number.
+ */
+export type FinancialRiskInputs = {
+  approvalLotCost?: number;
+  packagingCost?: number;
+  labelCost?: number;
+  exportImportCost?: number;
+  prepCenterCost?: number;
+  totalFullProductionCost?: number;
+  directSaleRecoveryPct?: number;
+  wholesaleRecoveryPct?: number;
+  liquidationRecoveryPct?: number;
+};
+
+export type FinancialRiskOutputs = {
+  cashAtRiskBeforeApproval?: number;
+  maxLossIfDenied?: number;
+  recoverableValueByChannel?: {
+    directSale?: number;
+    wholesale?: number;
+    liquidation?: number;
+  };
+  /** Requires a per-unit price/cost, which isn't one of the given inputs — always undefined until that input exists. Never fabricated. */
+  breakEvenUnitsApprovalLot?: number;
+  fullOrderExposurePrevented?: number;
+};
+
 /** Used as a `??` fallback for producer-style facts not yet confirmed — intentional, do not fill in specifics without a real source. */
 export const PENDING_CONFIRMATION = "Pending Producer Confirmation";
 
@@ -161,6 +298,50 @@ export type Coffee = {
   inventoryStatus?: InventoryStatusValue;
   /** Free-text internal note — e.g. why a lot is unavailable, or what it substitutes for. Never shown publicly. */
   notes?: string;
+  /**
+   * Amazon category-approval gate (Grocery & Gourmet Foods). All optional —
+   * left the shared Coffee type instead of `required: boolean` as the
+   * original brief specified, since most coffees (e.g. Altura, the
+   * PENDING- candidates) have no Amazon exposure at all yet and forcing
+   * these fields onto every record would be boilerplate, not honesty.
+   * `undefined` reads as "not applicable / not yet known" everywhere these
+   * are checked, same honest-omission rule as the rest of this type. Only
+   * ever read/write these through canReleaseFullProduction(), getAmazonCta(),
+   * and the internal dashboard — never re-derive the gate logic elsewhere.
+   */
+  asin?: string;
+  amazonSku?: string;
+  amazonCategory?: string;
+  amazonListingStatus?: "inactive" | "active";
+  amazonApprovalRequired?: boolean;
+  amazonApprovalStatus?: AmazonApprovalStatus;
+  amazonApplicationSubmittedAt?: string;
+  amazonApprovalReceivedAt?: string;
+  amazonApplicationCaseId?: string;
+  amazonDenialReason?: string;
+  approvalInvoiceReference?: string;
+  approvalInvoiceDate?: string;
+  approvalInvoiceUnitCount?: number;
+  lifecycleStatus?: ProductLifecycleStatus;
+  approvalLot?: ApprovalLotWorkflow;
+  alternateChannels?: AlternateChannelPlan[];
+  financialRisk?: FinancialRiskInputs;
+  /**
+   * Full production-release gate inputs — see canReleaseFullProduction().
+   * Each is a distinct human sign-off; none is inferred from any other
+   * field on this record.
+   */
+  realCoffeeAvailabilityConfirmed?: boolean;
+  coffeeNameConfirmed?: boolean;
+  lotInfoConfirmedWhereRequired?: boolean;
+  packagingSpecApproved?: boolean;
+  labelModeApproved?: boolean;
+  buyerImporterDataConfirmed?: boolean;
+  exporterDataConfirmed?: boolean;
+  fundingApproved?: boolean;
+  /** Jon's explicit sign-off to proceed on a non-Amazon channel instead of waiting for Amazon approval — never inferred, only ever set true by a direct instruction. */
+  alternateChannelProductionStrategyApproved?: boolean;
+  fullProductionReleaseApproved?: boolean;
   sizeOptions: CoffeeSizeOption[];
   story: string;
   storage: string;
@@ -216,7 +397,60 @@ export const coffees: Coffee[] = [
     exporter: "Casa Ruiz S.A.",
     status: "reserve_collection",
     featured: true,
-    sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "", amazonUrl: "" }],
+    // Confirmed Amazon facts: ASIN B0H8PXF3D2 / SKU IPC-BOQ-SHB-WASHED-8OZ
+    // exist; the listing is Inactive pending Grocery & Gourmet Foods
+    // category approval, which requires a qualifying purchase invoice
+    // (>=10 units, dated within 180 days) as evidence — not a guarantee.
+    // Every gate field below is left at its honest current state (mostly
+    // unconfirmed/false) rather than assumed — see canReleaseFullProduction().
+    asin: "B0H8PXF3D2",
+    amazonSku: "IPC-BOQ-SHB-WASHED-8OZ",
+    amazonCategory: "Grocery & Gourmet Foods",
+    amazonListingStatus: "inactive",
+    amazonApprovalRequired: true,
+    amazonApprovalStatus: "invoice_needed",
+    lifecycleStatus: "approval_lot_planned",
+    approvalLot: {
+      // proposedQuantity intentionally unset — never hardcode a quantity
+      // Jon hasn't supplied. Amazon's stated minimum is a combined 10 units.
+      supplierConfirmed: false,
+      invoiceRequirementsNotes:
+        "Amazon requires: invoice dated within the stated 180-day window; " +
+        "buyer name/address matching the Amazon selling account; " +
+        "manufacturer/distributor name and address; combined purchase of " +
+        "at least 10 units; supplier may be contacted for verification; " +
+        "pricing may be omitted from the uploaded copy; a normal supplier " +
+        "invoice is preferred over an Amazon order confirmation.",
+      paymentStatus: "not_paid",
+      invoiceReceived: false,
+      applicationSubmitted: false,
+      approvalOutcome: "pending",
+    },
+    alternateChannels: [
+      { channel: "infinitepanamacoffee_com", status: "not_planned", readinessChecklist: [] },
+      { channel: "local_panama_sales", status: "not_planned", readinessChecklist: [] },
+      { channel: "us_direct_sales", status: "not_planned", readinessChecklist: [] },
+      { channel: "wholesale", status: "not_planned", readinessChecklist: [] },
+      { channel: "cafes", status: "not_planned", readinessChecklist: [] },
+      { channel: "home_roaster_communities", status: "not_planned", readinessChecklist: [] },
+      { channel: "specialty_retailers", status: "not_planned", readinessChecklist: [] },
+      { channel: "events", status: "not_planned", readinessChecklist: [] },
+      { channel: "corporate_gifts", status: "not_planned", readinessChecklist: [] },
+    ],
+    // No cost/recovery figures supplied yet — left empty rather than
+    // populated with placeholder numbers. See calculateFinancialRisk().
+    financialRisk: {},
+    realCoffeeAvailabilityConfirmed: false,
+    coffeeNameConfirmed: false,
+    lotInfoConfirmedWhereRequired: false,
+    packagingSpecApproved: false,
+    labelModeApproved: false,
+    buyerImporterDataConfirmed: false,
+    exporterDataConfirmed: false,
+    fundingApproved: false,
+    alternateChannelProductionStrategyApproved: false,
+    fullProductionReleaseApproved: false,
+    sizeOptions: [{ size: "8 oz", netWeight: "227 g", sku: "IPC-BOQ-SHB-WASHED-8OZ", amazonUrl: "" }],
     story:
       "Boquete SHB Arabica Washed is a sample record for the next release in the Infinite Select™ collection — a washed-process lot from Boquete, Chiriquí, exported by Casa Ruiz S.A. The commercial product name, final lot, and pack/best-by dates have not yet been confirmed by Casa Ruiz.",
     storage:
@@ -421,27 +655,168 @@ export function getSizeOption(coffee: Coffee, size = "8 oz"): CoffeeSizeOption {
 export type AmazonCta = {
   href: string;
   label: string;
-  /** True when `href` is a real listing for this coffee, false when it's the AMAZON_STOREFRONT_URL fallback. */
+  /** True when `href` is a real listing for this coffee, false when it's the AMAZON_STOREFRONT_URL fallback or the pre-approval launch-list link. */
   isExactListing: boolean;
+  /** True when this coffee is Amazon-approval-gated and not yet approved — href/label never claim purchasability in this state. */
+  isApprovalGated: boolean;
 };
 
 /**
  * The single source of truth for "which Amazon URL, which label" — every
  * Amazon CTA in the app should go through this rather than re-deriving it.
  * Pass `size` when the CTA is for one specific size option; omit it to ask
- * "does this coffee have an Amazon listing at all" (any size).
- * Takes only `sizeOptions` (not the full Coffee) so it also works with
- * CellarProvider's SavedCoffee projection.
+ * "does this coffee have an Amazon listing at all" (any size). Pass
+ * `context: "reorder"` for a saved/previously-purchased coffee (e.g. My
+ * Infinite Cellar™) to get "Reorder on Amazon" instead of "Buy on Amazon"
+ * once a real listing exists — the gated and fallback states are unaffected
+ * by context, since there's nothing to "reorder" before an offer exists.
+ *
+ * Approval gate: while `amazonApprovalRequired` is true and
+ * `amazonApprovalStatus` isn't yet "approved", this coffee must never show
+ * an Amazon purchase link at all (an inactive listing is not purchasable,
+ * and implying otherwise misrepresents availability) — it links to a
+ * WhatsApp launch-list signup instead. Takes only the fields it actually
+ * needs (not the full Coffee) so it also works with CellarProvider's
+ * SavedCoffee projection.
  */
 export function getAmazonCta(
-  coffee: Pick<Coffee, "sizeOptions">,
-  size?: CoffeeSizeOption
+  coffee: Pick<
+    Coffee,
+    "sizeOptions" | "coffeeName" | "amazonApprovalRequired" | "amazonApprovalStatus"
+  >,
+  size?: CoffeeSizeOption,
+  context: "buy" | "reorder" = "buy"
 ): AmazonCta {
+  const approvalGated =
+    coffee.amazonApprovalRequired === true && coffee.amazonApprovalStatus !== "approved";
+
+  if (approvalGated) {
+    return {
+      href: whatsAppUrl(coffee.coffeeName, "Amazon Launch List"),
+      label: "Join the Launch List",
+      isExactListing: false,
+      isApprovalGated: true,
+    };
+  }
+
   const amazonUrl = size?.amazonUrl || coffee.sizeOptions.find((s) => s.amazonUrl)?.amazonUrl;
   if (amazonUrl) {
-    return { href: amazonUrl, label: "Buy on Amazon", isExactListing: true };
+    return {
+      href: amazonUrl,
+      label: context === "reorder" ? "Reorder on Amazon" : "Buy on Amazon",
+      isExactListing: true,
+      isApprovalGated: false,
+    };
   }
-  return { href: AMAZON_STOREFRONT_URL, label: "Visit Our Amazon Store", isExactListing: false };
+  return {
+    href: AMAZON_STOREFRONT_URL,
+    label: "Visit Our Amazon Store",
+    isExactListing: false,
+    isApprovalGated: false,
+  };
+}
+
+export type ProductionGateResult = {
+  canRelease: boolean;
+  missingConditions: string[];
+};
+
+/**
+ * The one authoritative guard for "can full production inventory be
+ * purchased, shipped to the prep center, or sent to FBA for this coffee
+ * yet?" Every condition must be explicitly true — an unset (undefined)
+ * field is treated exactly like false, so this never silently passes on an
+ * assumption. Call this instead of re-deriving any part of this logic
+ * elsewhere (the internal dashboard, any future purchasing/shipping tool).
+ */
+export function canReleaseFullProduction(coffee: Coffee): ProductionGateResult {
+  const missing: string[] = [];
+
+  const amazonRouteApproved = coffee.amazonApprovalStatus === "approved";
+  const alternateRouteApproved = coffee.alternateChannelProductionStrategyApproved === true;
+  if (!amazonRouteApproved && !alternateRouteApproved) {
+    missing.push(
+      "Amazon approval status is not 'approved', and no alternate-channel production strategy has been explicitly approved."
+    );
+  }
+  if (!coffee.realCoffeeAvailabilityConfirmed) missing.push("Real coffee availability is not confirmed.");
+  if (!coffee.coffeeNameConfirmed) missing.push("Coffee name is not confirmed.");
+  if (!coffee.lotInfoConfirmedWhereRequired) missing.push("Lot information is not confirmed where required.");
+  if (!coffee.packagingSpecApproved) missing.push("Packaging specification is not approved.");
+  if (!coffee.labelModeApproved) missing.push("Label mode is not approved.");
+  if (!coffee.buyerImporterDataConfirmed) missing.push("Buyer/importer data is not confirmed.");
+  if (!coffee.exporterDataConfirmed) missing.push("Exporter data is not confirmed.");
+  if (!coffee.fundingApproved) missing.push("Funding is not approved.");
+  if (!coffee.fullProductionReleaseApproved) missing.push("Full production release has not been explicitly authorized.");
+
+  return { canRelease: missing.length === 0, missingConditions: missing };
+}
+
+/** True once Amazon has denied the category application for this coffee. */
+export function isAmazonDenied(coffee: Coffee): boolean {
+  return coffee.amazonApprovalStatus === "denied";
+}
+
+/**
+ * FBA shipment creation must never proceed without an approved category
+ * application — denial, pending, or any other non-"approved" state blocks
+ * it, same as canReleaseFullProduction's Amazon-route check.
+ */
+export function canCreateFbaShipment(coffee: Coffee): boolean {
+  return coffee.amazonApprovalStatus === "approved";
+}
+
+/**
+ * Computes risk outputs strictly from whatever inputs are actually
+ * supplied. An output that depends on a missing input comes back
+ * `undefined` rather than a guessed number — e.g. break-even units needs a
+ * per-unit price/cost that isn't one of the tracked inputs, so it's always
+ * undefined until that figure exists elsewhere.
+ */
+export function calculateFinancialRisk(inputs: FinancialRiskInputs): FinancialRiskOutputs {
+  const {
+    approvalLotCost, packagingCost, labelCost, exportImportCost, prepCenterCost,
+    totalFullProductionCost, directSaleRecoveryPct, wholesaleRecoveryPct, liquidationRecoveryPct,
+  } = inputs;
+
+  const approvalLotComponents = [approvalLotCost, packagingCost, labelCost, exportImportCost, prepCenterCost];
+  const cashAtRiskBeforeApproval = approvalLotComponents.every((v) => v !== undefined)
+    ? approvalLotComponents.reduce<number>((sum, v) => sum + (v as number), 0)
+    : undefined;
+
+  // If the approval lot is denied and has zero alternate-channel recovery,
+  // the full cash committed to it is the maximum loss.
+  const maxLossIfDenied = cashAtRiskBeforeApproval;
+
+  const recoverableValueByChannel =
+    cashAtRiskBeforeApproval === undefined
+      ? undefined
+      : {
+          directSale:
+            directSaleRecoveryPct !== undefined ? cashAtRiskBeforeApproval * directSaleRecoveryPct : undefined,
+          wholesale:
+            wholesaleRecoveryPct !== undefined ? cashAtRiskBeforeApproval * wholesaleRecoveryPct : undefined,
+          liquidation:
+            liquidationRecoveryPct !== undefined ? cashAtRiskBeforeApproval * liquidationRecoveryPct : undefined,
+        };
+
+  const fullOrderExposurePrevented =
+    totalFullProductionCost !== undefined && cashAtRiskBeforeApproval !== undefined
+      ? totalFullProductionCost - cashAtRiskBeforeApproval
+      : undefined;
+
+  return {
+    cashAtRiskBeforeApproval,
+    maxLossIfDenied,
+    recoverableValueByChannel,
+    breakEvenUnitsApprovalLot: undefined,
+    fullOrderExposurePrevented,
+  };
+}
+
+/** Coffees that carry the Amazon approval gate at all — currently only ones with amazonApprovalRequired set. Drives the internal dashboard's Amazon Approval section. */
+export function getAmazonApprovalTracked(): Coffee[] {
+  return coffees.filter((c) => c.amazonApprovalRequired === true);
 }
 
 /**

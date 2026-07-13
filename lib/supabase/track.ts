@@ -9,9 +9,10 @@ export function detectDeviceType(ua: string): string {
 
 /**
  * Must match the `action` check constraint on reorder_events (migrations
- * 001, 010, 013). "amazon_product"/"amazon_storefront_fallback" are the
- * only actions TrackedAmazonLink fires (see getAmazonCta) — "amazon_clicked"
- * stays listed here for historical rows only, nothing fires it anymore.
+ * 001, 010, 013, 014). "amazon_product"/"amazon_storefront_fallback"/
+ * "amazon_launch_list_clicked" are the only actions TrackedAmazonLink fires
+ * (see getAmazonCta) — "amazon_clicked" stays listed here for historical
+ * rows only, nothing fires it anymore.
  */
 export type ReorderAction =
   | "reserve_clicked"
@@ -20,7 +21,8 @@ export type ReorderAction =
   | "amazon_clicked"
   | "whatsapp_clicked"
   | "amazon_product"
-  | "amazon_storefront_fallback";
+  | "amazon_storefront_fallback"
+  | "amazon_launch_list_clicked";
 
 /**
  * Fire-and-forget CTA tracking. Never call `.select()` here — reorder_events

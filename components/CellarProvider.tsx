@@ -5,6 +5,7 @@ import { cellarRepository } from "@/lib/cellar";
 import {
   getCoffeeByPassportNumber,
   getCollection,
+  type AmazonApprovalStatus,
   type CoffeeSizeOption,
   type CoffeeStatus,
 } from "@/data/coffees";
@@ -27,6 +28,8 @@ export type SavedCoffee = {
   addedAt: string;
   status: CoffeeStatus;
   sizeOptions: CoffeeSizeOption[];
+  amazonApprovalRequired?: boolean;
+  amazonApprovalStatus?: AmazonApprovalStatus;
 };
 
 type CellarContextValue = {
@@ -61,6 +64,8 @@ export function CellarProvider({ children }: { children: React.ReactNode }) {
             addedAt: item.addedAt,
             status: coffee.status,
             sizeOptions: coffee.sizeOptions,
+            amazonApprovalRequired: coffee.amazonApprovalRequired,
+            amazonApprovalStatus: coffee.amazonApprovalStatus,
           },
         ];
       }),

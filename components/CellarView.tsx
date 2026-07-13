@@ -109,6 +109,7 @@ export default function CellarView() {
               </Link>
               <TrackedAmazonLink
                 coffee={coffee}
+                context="reorder"
                 lotId={coffee.lotNumber ?? coffee.passportNumber}
                 onClick={() =>
                   logProductEvent({
