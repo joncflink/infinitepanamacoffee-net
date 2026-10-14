@@ -25,11 +25,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const { email, firstName, roastMethod, monthlyLbs, bagSizes, subscriptionInterest } = parsed.data;
+  const { email, firstName, roastMethod, monthlyLbs, bagSizes, heardFrom, source, subscriptionInterest } = parsed.data;
   const fields: Record<string, string> = { name: firstName };
   if (roastMethod) fields.ipc_roast_method = roastMethod;
   if (monthlyLbs) fields.ipc_monthly_lbs = monthlyLbs;
   if (bagSizes) fields.ipc_bag_sizes = bagSizes.join(", ");
+  if (heardFrom) fields.ipc_heard_from = heardFrom;
+  if (source) fields.ipc_source = source;
   if (subscriptionInterest) fields.ipc_subscription_interest = "yes";
 
   try {

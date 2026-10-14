@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MONTHLY_LBS, ROAST_METHODS, BAG_SIZES } from "@/lib/waitlist/validate";
+import { MONTHLY_LBS, ROAST_METHODS, BAG_SIZES, HEARD_FROM } from "@/lib/waitlist/validate";
 
 type Status = "idle" | "sending" | "done" | "error";
 
@@ -26,6 +26,8 @@ export default function HarvestWaitlistForm() {
           roastMethod: fd.get("roastMethod") || undefined,
           monthlyLbs: fd.get("monthlyLbs") || undefined,
           bagSizes: fd.getAll("bagSizes"),
+          heardFrom: fd.get("heardFrom") || undefined,
+          source: new URLSearchParams(window.location.search).get("src") || undefined,
           subscriptionInterest: fd.get("subscriptionInterest") === "on",
           company: fd.get("company"),
         }),
@@ -81,6 +83,15 @@ export default function HarvestWaitlistForm() {
         <select name="monthlyLbs" defaultValue="" className={`mt-2 ${inputCls}`}>
           <option value="">Choose one</option>
           {MONTHLY_LBS.map((m) => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
+      </label>
+      <label className="block text-sm text-forest">
+        How did you hear about us? <span className="text-dark-gray">(optional)</span>
+        <select name="heardFrom" defaultValue="" className={`mt-2 ${inputCls}`}>
+          <option value="">Choose one</option>
+          {HEARD_FROM.map((m) => (
             <option key={m} value={m}>{m}</option>
           ))}
         </select>
