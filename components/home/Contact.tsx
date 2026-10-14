@@ -12,7 +12,7 @@ export default function Contact() {
           Contact
         </h2>
         <p className="mt-8 text-base leading-8 text-dark-gray">
-          For availability, pre-orders, or questions, reach us directly.
+          For availability or questions, reach us directly.
         </p>
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
