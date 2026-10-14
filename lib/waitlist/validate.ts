@@ -15,11 +15,14 @@ export const MONTHLY_LBS = [
   "More than 5 lb",
 ] as const;
 
+export const BAG_SIZES = ["8 oz", "1 lb", "2 lb or more"] as const;
+
 export type WaitlistInput = {
   email: string;
   firstName: string;
   roastMethod?: string;
   monthlyLbs?: string;
+  bagSizes?: string[];
   subscriptionInterest?: boolean;
 };
 
@@ -46,6 +49,9 @@ export function validateWaitlist(
     (MONTHLY_LBS as readonly string[]).includes(b.monthlyLbs)
       ? b.monthlyLbs
       : undefined;
+  const bagSizes = Array.isArray(b.bagSizes)
+    ? (BAG_SIZES as readonly string[]).filter((sz) => (b.bagSizes as unknown[]).includes(sz))
+    : [];
   return {
     ok: true,
     data: {
@@ -53,6 +59,7 @@ export function validateWaitlist(
       firstName,
       roastMethod,
       monthlyLbs,
+      bagSizes: bagSizes.length ? bagSizes : undefined,
       subscriptionInterest: b.subscriptionInterest === true,
     },
   };

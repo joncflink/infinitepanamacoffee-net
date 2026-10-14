@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MONTHLY_LBS, ROAST_METHODS } from "@/lib/waitlist/validate";
+import { MONTHLY_LBS, ROAST_METHODS, BAG_SIZES } from "@/lib/waitlist/validate";
 
 type Status = "idle" | "sending" | "done" | "error";
 
@@ -25,6 +25,7 @@ export default function HarvestWaitlistForm() {
           firstName: fd.get("firstName"),
           roastMethod: fd.get("roastMethod") || undefined,
           monthlyLbs: fd.get("monthlyLbs") || undefined,
+          bagSizes: fd.getAll("bagSizes"),
           subscriptionInterest: fd.get("subscriptionInterest") === "on",
           company: fd.get("company"),
         }),
@@ -84,6 +85,20 @@ export default function HarvestWaitlistForm() {
           ))}
         </select>
       </label>
+      <fieldset className="text-sm text-forest">
+        <legend>
+          Our first batch ships in 8 oz bags. Which sizes would you buy later?{" "}
+          <span className="text-dark-gray">(optional, pick any)</span>
+        </legend>
+        <div className="mt-2 flex flex-wrap gap-4">
+          {BAG_SIZES.map((sz) => (
+            <label key={sz} className="flex items-center gap-2">
+              <input name="bagSizes" type="checkbox" value={sz} className="h-4 w-4 accent-[#1f4d3a]" />
+              <span>{sz}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <label className="flex items-start gap-3 text-sm text-forest">
         <input name="subscriptionInterest" type="checkbox" className="mt-1 h-4 w-4 accent-[#1f4d3a]" />
         <span>I&rsquo;d be interested in a monthly green-coffee subscription. <span className="text-dark-gray">(optional)</span></span>
