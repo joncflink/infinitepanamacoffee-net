@@ -59,6 +59,12 @@ export default function Hero() {
             Explore Infinite Coffee Passport™
           </Link>
         </div>
+        <Link
+          href="/harvest"
+          className="mt-6 text-sm tracking-wide text-cream underline decoration-gold-accessible underline-offset-4 transition-colors duration-300 hover:text-gold-accessible"
+        >
+          New-crop harvest waitlist &rarr;
+        </Link>
       </div>
     </section>
   );

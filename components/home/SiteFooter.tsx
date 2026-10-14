@@ -13,6 +13,12 @@ export default function SiteFooter() {
       </p>
       <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs">
         <Link
+          href="/harvest"
+          className="py-1 transition-colors duration-300 hover:text-forest"
+        >
+          Harvest Waitlist
+        </Link>
+        <Link
           href="/founders-letter"
           className="py-1 transition-colors duration-300 hover:text-forest"
         >
