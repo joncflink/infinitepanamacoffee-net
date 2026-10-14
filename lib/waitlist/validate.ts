@@ -15,6 +15,15 @@ export const MONTHLY_LBS = [
   "More than 5 lb",
 ] as const;
 
+export const HEARD_FROM = [
+  "Facebook",
+  "Reddit",
+  "Home-Barista forum",
+  "Friend or family",
+  "Search engine",
+  "Other",
+] as const;
+
 export const BAG_SIZES = ["8 oz", "1 lb", "2 lb or more"] as const;
 
 export type WaitlistInput = {
@@ -23,6 +32,8 @@ export type WaitlistInput = {
   roastMethod?: string;
   monthlyLbs?: string;
   bagSizes?: string[];
+  heardFrom?: string;
+  source?: string;
   subscriptionInterest?: boolean;
 };
 
@@ -52,6 +63,14 @@ export function validateWaitlist(
   const bagSizes = Array.isArray(b.bagSizes)
     ? (BAG_SIZES as readonly string[]).filter((sz) => (b.bagSizes as unknown[]).includes(sz))
     : [];
+  const heardFrom =
+    typeof b.heardFrom === "string" && (HEARD_FROM as readonly string[]).includes(b.heardFrom)
+      ? b.heardFrom
+      : undefined;
+  const source =
+    typeof b.source === "string" && /^[a-z0-9_-]{1,40}$/i.test(b.source)
+      ? b.source.toLowerCase()
+      : undefined;
   return {
     ok: true,
     data: {
@@ -60,6 +79,8 @@ export function validateWaitlist(
       roastMethod,
       monthlyLbs,
       bagSizes: bagSizes.length ? bagSizes : undefined,
+      heardFrom,
+      source,
       subscriptionInterest: b.subscriptionInterest === true,
     },
   };
