@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import CellarView from "@/components/CellarView";
-import SiteFooter from "@/components/home/SiteFooter";
 
 export const metadata: Metadata = {
   title: "My Infinite Cellar™",
@@ -27,7 +26,6 @@ export default function CellarPage() {
           <CellarView />
         </div>
       </main>
-      <SiteFooter />
     </>
   );
 }

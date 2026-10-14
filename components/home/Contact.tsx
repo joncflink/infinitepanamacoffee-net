@@ -6,13 +6,13 @@ export default function Contact() {
   const featured = getFeaturedCoffee();
 
   return (
-    <section className="w-full max-w-xl px-6 py-28 text-center sm:py-36">
+    <section id="contact" className="w-full max-w-xl px-6 py-28 text-center sm:py-36">
       <ScrollReveal>
         <h2 className="font-heading text-2xl text-forest sm:text-3xl">
           Contact
         </h2>
         <p className="mt-8 text-base leading-8 text-dark-gray">
-          For availability, pre-orders, or questions, reach us directly.
+          For availability or questions, reach us directly.
         </p>
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

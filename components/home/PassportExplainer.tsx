@@ -7,7 +7,7 @@ export default function PassportExplainer() {
   const featured = getFeaturedCoffee();
 
   return (
-    <section className="w-full bg-forest px-6 py-28 text-cream sm:py-36">
+    <section id="coffee" className="w-full bg-forest px-6 py-28 text-cream sm:py-36">
       <ScrollReveal className="mx-auto max-w-2xl text-center">
         <h2 className="font-heading text-2xl sm:text-3xl">
           The Infinite Coffee Passport™

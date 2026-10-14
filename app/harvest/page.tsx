@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import HarvestWaitlistForm from "@/components/HarvestWaitlistForm";
-import SiteFooter from "@/components/home/SiteFooter";
 
 export const metadata: Metadata = {
   title: "The First New-Crop Harvest from Boquete",
@@ -61,7 +60,6 @@ export default function HarvestPage() {
           </div>
         </section>
       </main>
-      <SiteFooter />
     </>
   );
 }

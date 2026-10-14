@@ -47,24 +47,18 @@ export default function Hero() {
 
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
           <Link
-            href={`/passport/${featured.passportNumber}#reserve`}
+            href="/harvest"
             className="rounded-full bg-gold-accessible px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 ease-out hover:bg-gold-accessible/90 hover:-translate-y-0.5"
           >
-            Reserve Your Allocation
+            Join the Harvest Waitlist
           </Link>
           <Link
-            href={`/passport/${featured.passportNumber}#passport`}
+            href="#story"
             className="rounded-full border border-cream/80 px-9 py-4 text-sm tracking-wide text-cream transition-all duration-300 ease-out hover:border-cream hover:bg-cream/10"
           >
-            Explore Infinite Coffee Passport™
+            Our Story
           </Link>
         </div>
-        <Link
-          href="/harvest"
-          className="mt-6 text-sm tracking-wide text-cream underline decoration-gold-accessible underline-offset-4 transition-colors duration-300 hover:text-gold-accessible"
-        >
-          New-crop harvest waitlist &rarr;
-        </Link>
       </div>
     </section>
   );

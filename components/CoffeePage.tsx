@@ -453,7 +453,7 @@ export default function CoffeePage({
           <h2 className="font-heading text-2xl">Reserve or Reorder</h2>
           <p className="mx-auto mt-8 max-w-xl text-base leading-8">
             Infinite Panama Coffee is currently preparing its first launch lots.
-            For availability, pre-orders, or questions, contact us directly.
+            For availability or questions, contact us directly.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <TrackedLink

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cinzel, Montserrat } from "next/font/google";
 import { CellarProvider } from "@/components/CellarProvider";
+import SiteChrome from "@/components/site/SiteChrome";
 import "./globals.css";
 
 const cinzel = Cinzel({
@@ -48,14 +49,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cinzel.variable} ${montserrat.variable} h-full antialiased`}
+      className={`${cinzel.variable} ${montserrat.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-charcoal">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        <CellarProvider>{children}</CellarProvider>
+        <CellarProvider>
+          <SiteChrome>{children}</SiteChrome>
+        </CellarProvider>
       </body>
     </html>
   );

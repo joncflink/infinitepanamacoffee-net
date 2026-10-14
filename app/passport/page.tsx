@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import PassportLookupForm from "@/components/PassportLookupForm";
-import SiteFooter from "@/components/home/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Find Your Coffee Passport™",
@@ -22,7 +21,6 @@ export default function PassportLookupPage() {
 
         <PassportLookupForm className="mx-auto mt-12 max-w-md" source="passport_page" />
       </main>
-      <SiteFooter />
     </>
   );
 }
