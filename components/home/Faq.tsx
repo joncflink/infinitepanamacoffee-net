@@ -21,7 +21,7 @@ const FAQS = [
   },
   {
     q: "How do I reach you?",
-    a: "For availability, pre-orders, or questions, reach us directly on WhatsApp.",
+    a: "For availability or questions, reach us directly on WhatsApp.",
   },
 ];
 
