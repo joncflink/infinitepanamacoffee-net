@@ -22,7 +22,7 @@ export default function HarvestPage() {
             <h1 className="mt-3 font-heading text-3xl leading-tight sm:text-5xl">
               Our First New-Crop Harvest from Boquete
             </h1>
-            <p className="mt-5 text-lg">Green coffee for home roasters, from the small farms of Jaramillo, Boquete, Panama.</p>
+            <p className="mt-5 text-lg">Green coffee for home roasters, from small farms around Boquete, Panama.</p>
             <a href="#join" className="mt-8 inline-block rounded-full bg-gold-accessible px-9 py-[1.1rem] text-sm tracking-wide text-forest transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold-accessible/90">
               Join the Free Waitlist
             </a>
@@ -33,10 +33,10 @@ export default function HarvestPage() {
           <h2 className="font-heading text-2xl text-forest sm:text-3xl">Where It Comes From</h2>
           <div className="mx-auto mt-8 h-px w-24 bg-gold" />
           <p className="mt-8 text-base leading-8 text-dark-gray">
-            High above the town of Boquete, in the Jaramillo area of Chiriquí, small family farms tend coffee on steep volcanic slopes in cool mountain air. Picking for the new crop takes place through November and December.
+            High in the mountains around Boquete, in Chiriquí, small family farms tend coffee on steep volcanic slopes in cool mountain air. Picking for the new crop takes place through November and December.
           </p>
           <p className="mt-6 text-base leading-8 text-dark-gray">
-            We work with Mr. Ruiz, who sources from about eleven small farms around Boquete. Our first lot is a washed Boquete SHB Arabica, <em>Altura</em> (lot IPC-ALT-001), sold green and unroasted, so you decide how it&rsquo;s roasted.
+            We work with a local Boquete partner who sources from about eleven small farms in the area. Our first lot is a high-grown Boquete Arabica, <em>Altura</em> (lot IPC-ALT-001), sold green and unroasted, so you decide how it&rsquo;s roasted.
           </p>
         </section>
 
