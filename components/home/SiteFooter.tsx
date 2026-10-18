@@ -1,13 +1,14 @@
 import Link from "next/link";
 
 const linkClass = "py-1 transition-colors duration-300 hover:text-forest";
+const FACEBOOK_PAGE_URL = "https://www.facebook.com/profile.php?id=61595539289069&sk=about";
 
 export default function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="w-full border-t border-gold/30 bg-cream text-sm text-dark-gray">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-3 sm:px-8">
+      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-4 sm:px-8">
         <div>
           <p className="font-heading text-forest">Infinite Panama Coffee™</p>
           <p className="mt-2">A Member of The Infinite Companies™</p>
@@ -22,6 +23,16 @@ export default function SiteFooter() {
             <li><Link href="/passport" className={linkClass}>Coffee Passport™</Link></li>
             <li><Link href="/founders-letter" className={linkClass}>Founder&rsquo;s Letter</Link></li>
             <li><Link href="/#faq" className={linkClass}>FAQ</Link></li>
+          </ul>
+        </nav>
+        <nav aria-label="Connect">
+          <p className="font-heading text-xs tracking-[0.2em] text-forest">CONNECT</p>
+          <ul className="mt-4 space-y-2">
+            <li>
+              <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noreferrer" className={linkClass}>
+                Facebook Page
+              </a>
+            </li>
           </ul>
         </nav>
         <nav aria-label="Legal">
