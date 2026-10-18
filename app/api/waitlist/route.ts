@@ -42,16 +42,61 @@ export async function POST(request: Request) {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ email, fields, groups: [groupId] }),
+      body: JSON.stringify({
+        email,
+        fields,
+        groups: [groupId],
+        status: "active",
+      }),
     });
+
+    const responseText = await res.text();
+    let responseBody: unknown;
+    try {
+      responseBody = responseText ? JSON.parse(responseText) : undefined;
+    } catch {
+      responseBody = undefined;
+    }
+
     if (!res.ok) {
-      console.error("Waitlist: MailerLite error", res.status);
+      const errorRecord =
+        responseBody && typeof responseBody === "object"
+          ? (responseBody as Record<string, unknown>)
+          : {};
+      console.error("Waitlist: MailerLite rejected subscriber", {
+        status: res.status,
+        requestId: res.headers.get("x-request-id") ?? undefined,
+        message: typeof errorRecord.message === "string" ? errorRecord.message : undefined,
+        error: typeof errorRecord.error === "string" ? errorRecord.error : undefined,
+        errorKeys:
+          errorRecord.errors && typeof errorRecord.errors === "object"
+            ? Object.keys(errorRecord.errors)
+            : undefined,
+      });
       return NextResponse.json(
         { ok: false, error: "Something went wrong. Please try again." },
         { status: 502 },
       );
     }
-  } catch {
+
+    const successRecord =
+      responseBody && typeof responseBody === "object"
+        ? (responseBody as Record<string, unknown>)
+        : {};
+    const subscriber =
+      successRecord.data && typeof successRecord.data === "object"
+        ? (successRecord.data as Record<string, unknown>)
+        : {};
+    console.info("Waitlist: MailerLite subscriber accepted", {
+      status: res.status,
+      requestId: res.headers.get("x-request-id") ?? undefined,
+      subscriberId: typeof subscriber.id === "string" ? subscriber.id : undefined,
+      groupIdConfigured: Boolean(groupId),
+    });
+  } catch (error) {
+    console.error("Waitlist: MailerLite request failed", {
+      error: error instanceof Error ? error.name : "unknown",
+    });
     return NextResponse.json(
       { ok: false, error: "Something went wrong. Please try again." },
       { status: 502 },
