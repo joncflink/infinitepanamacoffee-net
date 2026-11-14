@@ -39,6 +39,27 @@ export default function HarvestPage() {
           </p>
         </section>
 
+        <section className="w-full max-w-4xl px-6 pb-12">
+          <div className="rounded-2xl border border-forest/15 bg-cream/60 p-8 text-left shadow-sm sm:p-10">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-xs tracking-[0.28em] text-forest/70">FOUNDING LOT</p>
+                <h2 className="mt-2 font-heading text-2xl text-forest sm:text-3xl">Altura · IPC-ALT-001</h2>
+              </div>
+              <span className="rounded-full border border-gold/70 px-4 py-2 text-xs tracking-wide text-forest">Reserve your place</span>
+            </div>
+            <dl className="mt-8 grid gap-5 text-sm sm:grid-cols-2 lg:grid-cols-4">
+              <div><dt className="text-dark-gray">Origin</dt><dd className="mt-1 font-medium text-forest">Boquete, Chiriquí</dd></div>
+              <div><dt className="text-dark-gray">Process</dt><dd className="mt-1 font-medium text-forest">Washed</dd></div>
+              <div><dt className="text-dark-gray">Format</dt><dd className="mt-1 font-medium text-forest">Green · unroasted</dd></div>
+              <div><dt className="text-dark-gray">Availability</dt><dd className="mt-1 font-medium text-forest">Founding batch</dd></div>
+            </dl>
+            <p className="mt-7 text-sm leading-7 text-dark-gray">
+              This is the first lot we are tracking for the harvest list. Join the waitlist below to hear when quantity, pricing, and the ship date are confirmed.
+            </p>
+          </div>
+        </section>
+
         <section className="w-full max-w-2xl px-6 pb-8 text-center">
           <h2 className="font-heading text-2xl text-forest sm:text-3xl">Made for Home Roasters</h2>
           <p className="mt-8 text-base leading-8 text-dark-gray">
